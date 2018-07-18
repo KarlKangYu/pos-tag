@@ -3,8 +3,8 @@ import codecs
 import sys
 
 def build_dict(data_in, vocab_out):
-    dep2ids = {}
-    i = 6
+    dep2ids = {"_PAD": 0, "<unk>": 1}
+    i = 2
     with codecs.open(data_in, 'r') as f1:
         nlp = spacy.load("en")
         for line in f1.readlines():
