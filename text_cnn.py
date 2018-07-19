@@ -6,12 +6,14 @@ class TextCNN(object):
     Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
     """
     def __init__(
-      self, sequence_length, num_classes, vocab_size,
-      embedding_size, tags_vocab_size, filter_sizes, num_filters, l2_reg_lambda=0.0):
+      self, sequence_length, num_classes, vocab_size, tags_vocab_size, deps_vocab_size,
+      embedding_size, filter_sizes, num_filters, l2_reg_lambda=0.0):
 
         # Placeholders for input, output and dropout
         self.input_x = tf.placeholder(tf.int32, [None, sequence_length], name="input_x")
         self.input_tags = tf.placeholder(tf.int32, [None, sequence_length], name="input_tags")
+        self.input_deps = tf.placeholder(tf.int32, [None, sequence_length], name="input_dependency")
+        self.input_head = tf.placeholder(tf.int32, [None, sequence_length], name="input_head")
         self.input_y = tf.placeholder(tf.float32, [None, num_classes], name="input_y")
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
 
@@ -30,7 +32,17 @@ class TextCNN(object):
             embedded_tags = tf.nn.embedding_lookup(W_tags, self.input_tags)
             embedded_tags_expanded = tf.expand_dims(embedded_tags, -1)
 
-        cnn_inputs = tf.concat([self.embedded_chars_expanded, embedded_tags_expanded], -1)
+        with tf.device('/cpu:0'), tf.name_scope("embedding_deps"):
+            W_deps = tf.get_variable("embed_W_deps", [deps_vocab_size, embedding_size], initializer=initializer)
+            embedded_deps = tf.nn.embedding_lookup(W_deps, self.input_deps)
+            embedded_deps_expanded = tf.expand_dims(embedded_deps, -1)
+
+        with tf.device('/cpu:0'), tf.name_scope("embedding_head"):
+            W_head = tf.get_variable("embed_W_head", [vocab_size, embedding_size], initializer=initializer)
+            embedded_head = tf.nn.embedding_lookup(W_head, self.input_head)
+            embedded_head_expanded = tf.expand_dims(embedded_head, -1)
+
+        cnn_inputs = tf.concat([self.embedded_chars_expanded, embedded_tags_expanded, embedded_deps_expanded, embedded_head_expanded], -1)
         print("Embedded Shape:", cnn_inputs.shape)
 
         # Create a convolution + maxpool layer for each filter size
@@ -38,7 +50,7 @@ class TextCNN(object):
         for i, filter_size in enumerate(filter_sizes):
             with tf.name_scope("conv-maxpool-%s" % filter_size):
                 # Convolution Layer
-                filter_shape = [filter_size, embedding_size, 2, num_filters]
+                filter_shape = [filter_size, embedding_size, 4, num_filters]
                 W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
                 b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
                 conv = tf.nn.conv2d(
@@ -88,3 +100,4 @@ class TextCNN(object):
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
+

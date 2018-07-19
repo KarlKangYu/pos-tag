@@ -18,9 +18,13 @@ def build_dict(data_in, vocab_out):
                     dep2ids[dep] = i
                     i += 1
 
+    print("Loading data done!")
+
     with codecs.open(vocab_out, 'w') as f2:
         for dep, id in dep2ids.items():
             f2.write(dep + "##" + str(id) + '\n')
+
+    print("Writing vocab done!")
 
 
 
