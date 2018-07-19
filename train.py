@@ -84,6 +84,7 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
         session_conf = tf.ConfigProto(
           allow_soft_placement=FLAGS.allow_soft_placement,
           log_device_placement=FLAGS.log_device_placement)
+        session_conf.gpu_options.allow_growth = True
         sess = tf.Session(config=session_conf)
         with sess.as_default():
             cnn = TextCNN(
