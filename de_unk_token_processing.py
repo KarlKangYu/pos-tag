@@ -2,13 +2,13 @@ import codecs
 import sys
 
 def de_processing(pos_in, neg_in, pos_out, neg_out):
-    f1 = codecs.open(pos_in, 'r')
+    f1 = codecs.open(pos_in, 'r', encoding="utf-8")
     pos_lines = f1.readlines()
-    f2 = codecs.open(neg_in, 'r')
+    f2 = codecs.open(neg_in, 'r', encoding="utf-8")
     neg_lines = f2.readlines()
     l = len(pos_lines)
-    f3 = codecs.open(pos_out, 'w')
-    f4 = codecs.open(neg_out, 'w')
+    f3 = codecs.open(pos_out, 'w', encoding="utf-8")
+    f4 = codecs.open(neg_out, 'w', encoding="utf-8")
     for i in range(l):
         pos_line = pos_lines[i].strip()
         neg_line = neg_lines[i].strip()
