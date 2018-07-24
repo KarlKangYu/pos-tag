@@ -54,7 +54,7 @@ def read_data(data_path_pos, data_path_neg, max_sequence_length):
             input_deps.append(deps)
             input_head.append(heads)
 
-    return np.array(x), np.array(input_tags), np.array(input_deps), np.array(input_head), np.array(y)
+    return  np.array(input_tags), np.array(input_deps), np.array(y)
 
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
     data = np.array(data)
