@@ -116,7 +116,7 @@ def train(tags_train, deps_train, y_train, tags_dev, deps_dev, y_dev):
 
             # Output directory for models and summaries
             timestamp = str(int(time.time()))
-            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+            out_dir = os.path.abspath(os.path.join(os.path.curdir, "model_tags_and_deps", timestamp))
             print("Writing to {}\n".format(out_dir))
 
             # Summaries for loss and accuracy
