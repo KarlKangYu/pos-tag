@@ -34,9 +34,14 @@ tf.flags.DEFINE_integer("num_epochs", 200, "Number of training epochs (default: 
 tf.flags.DEFINE_integer("evaluate_every", 10000, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 1000, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 2, "Number of checkpoints to store (default: 2)")
+
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
+
+# Model Saving Parameters
+tf.flags.DEFINE_boolean("restore_model", False, "Whether restore model or create new parameters")
+tf.flags.DEFINE_string("timestamp", "1532315192", "Use which model (saved in which time)")
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()
@@ -143,10 +148,16 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
             # Initialize all variables
             sess.run(tf.global_variables_initializer())
 
-            ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-            if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
-                print("*" * 20 + "\nReading model parameters from %s \n" % ckpt.model_checkpoint_path + "*" * 20)
-                saver.restore(sess, ckpt.model_checkpoint_path)
+            restore_path = os.path.abspath(os.path.join(os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.timestamp)), "checkpoints"))
+            ckpt = tf.train.get_checkpoint_state(restore_path)
+            restore = FLAGS.restore_model
+
+            if restore:
+                if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
+                    print("*" * 20 + "\nReading model parameters from %s \n" % ckpt.model_checkpoint_path + "*" * 20)
+                    saver.restore(sess, ckpt.model_checkpoint_path)
+                else:
+                    raise ValueError("Checkpoint {} is not exist".format(restore_path) )
             else:
                 print("*" * 20 + "\nCreated model with fresh parameters.\n" + "*" * 20)
 
