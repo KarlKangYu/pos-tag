@@ -148,8 +148,8 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
             # Initialize all variables
             sess.run(tf.global_variables_initializer())
 
-            restore_path = os.path.abspath(os.path.join(os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.timestamp)), "checkpoints"))
-            ckpt = tf.train.get_checkpoint_state(restore_path)
+            # restore_path = os.path.abspath(os.path.join(os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.timestamp)), "checkpoints"))
+            # ckpt = tf.train.get_checkpoint_state(restore_path)
             restore = FLAGS.restore_model
 
             if restore:
