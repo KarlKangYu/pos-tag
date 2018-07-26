@@ -41,7 +41,7 @@ tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on 
 
 # Model Saving Parameters
 tf.flags.DEFINE_boolean("restore_model", False, "Whether restore model or create new parameters")
-tf.flags.DEFINE_string("timestamp", "1532315192", "Use which model (saved in which time)")
+tf.flags.DEFINE_string("model_path", "runs", "Restore which model")
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()
@@ -153,11 +153,13 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
             restore = FLAGS.restore_model
 
             if restore:
-                if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
-                    print("*" * 20 + "\nReading model parameters from %s \n" % ckpt.model_checkpoint_path + "*" * 20)
-                    saver.restore(sess, ckpt.model_checkpoint_path)
-                else:
-                    raise ValueError("Checkpoint {} is not exist".format(restore_path) )
+                saver.restore(sess, FLAGS.model_path)
+                print("*" * 20 + "\nReading model parameters from %s \n" % FLAGS.model_path + "*" * 20)
+                # if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
+                #     print("*" * 20 + "\nReading model parameters from %s \n" % ckpt.model_checkpoint_path + "*" * 20)
+                #     saver.restore(sess, ckpt.model_checkpoint_path)
+                # else:
+                #     raise ValueError("Checkpoint {} is not exist".format(restore_path) )
             else:
                 print("*" * 20 + "\nCreated model with fresh parameters.\n" + "*" * 20)
 
