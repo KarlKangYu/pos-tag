@@ -44,11 +44,11 @@ tf.flags.DEFINE_boolean("restore_model", False, "Whether restore model or create
 tf.flags.DEFINE_string("model_path", "runs", "Restore which model")
 
 FLAGS = tf.flags.FLAGS
-FLAGS._parse_flags()
-print("\nParameters:")
-for attr, value in sorted(FLAGS.__flags.items()):
-    print("{}={}".format(attr.upper(), value))
-print("")
+# FLAGS._parse_flags()
+# print("\nParameters:")
+# for attr, value in sorted(FLAGS.__flags.items()):
+#     print("{}={}".format(attr.upper(), value))
+# print("")
 
 def preprocess():
     # Data Preparation
