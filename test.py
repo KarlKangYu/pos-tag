@@ -4,7 +4,7 @@ import data_loader
 from text_cnn import TextCNN
 import sys
 
-def test(pos_file, neg_file, ckpt1, ckpt2, ckpt3, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
+def test(pos_file, neg_file, ckpts_num, ckpts_path, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
          deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128):
     # Data Preparation
     # ==================================================
@@ -33,6 +33,23 @@ def test(pos_file, neg_file, ckpt1, ckpt2, ckpt3, sequence_length=30, words_voca
                 num_filters=num_filters)
 
             saver = tf.train.Saver(tf.global_variables(), max_to_keep=100)
+
+            sess.run(tf.global_variables_initializer())
+
+            # ckpts_path = ckpts_path.strip().split('#')
+            # assert ckpts_num == len(ckpts_path)
+            #
+            # for i in range(ckpts_num):
+            #     ckpt_path = ckpts_path[i]
+            #     saver.restore(sess=sess, save_path=ckpt_path)
+            #     print("*" * 20 + "\nLoading The {} Model:\n")
+            #
+            #
+            #
+            #
+
+
+
 
             saver.restore(sess=sess, save_path=ckpt1)
 
