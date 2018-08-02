@@ -4,7 +4,7 @@ import data_loader
 from text_cnn import TextCNN
 import sys
 
-def test(pos_file, neg_file, ckpt1, ckpt2, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
+def test(pos_file, neg_file, ckpt1, ckpt2, ckpt3, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
          deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128):
     # Data Preparation
     # ==================================================
@@ -93,6 +93,37 @@ def test(pos_file, neg_file, ckpt1, ckpt2, sequence_length=30, words_vocab_size=
 
             print("Accuracy:", accuracy2, "Recall:", recall, "Precision:", precision, "\n" + "*" * 20)
 
+            #########################################################################################################
+
+            saver.restore(sess=sess, save_path=ckpt3)
+
+            print("*" * 20 + "\nThird Model:\n")
+
+            feed_dict = {
+                cnn.input_x: x,
+                cnn.input_tags: tags,
+                cnn.input_deps: deps,
+                cnn.input_head: heads,
+                cnn.input_y: y,
+                cnn.dropout_keep_prob: 1.0
+            }
+
+            predictions3, probability3, accuracy3 = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
+                                                             feed_dict=feed_dict)
+            probabilities.append(probability3)
+
+            count = 0
+            for i in range(len(predictions3)):
+                if predictions3[i] == 1 and predictions3[i] == label[i]:
+                    count += 1
+            recall = count / neg_y
+
+            neg_pre3 = np.sum(predictions3 == 1)
+            print("In prediction, Negative number:", neg_pre3)
+            precision = count / neg_pre3
+
+            print("Accuracy:", accuracy3, "Recall:", recall, "Precision:", precision, "\n" + "*" * 20)
+
             if ensemble:
                 probabilities = np.array(probabilities)
                 probability = np.mean(probabilities, axis=0)
@@ -116,5 +147,6 @@ if __name__ == "__main__":
     neg_file = args[2]
     ckpt1 = args[3]
     ckpt2 = args[4]
-    test(pos_file, neg_file, ckpt1, ckpt2)
+    ckpt3 = args[5]
+    test(pos_file, neg_file, ckpt1, ckpt2, ckpt3)
 
