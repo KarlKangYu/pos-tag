@@ -4,7 +4,7 @@ import data_loader
 from text_cnn import TextCNN
 import sys
 
-def test(pos_file, neg_file, ckpts_num, ckpts_path, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
+def test(pos_file, neg_file, ckpt1, ckpt2, ckpt3, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
          deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128):
     # Data Preparation
     # ==================================================
