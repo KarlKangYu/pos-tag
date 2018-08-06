@@ -20,7 +20,8 @@ class TextCNN(object):
 
         # Keeping track of l2 regularization loss (optional)
         l2_loss = tf.constant(0.0)
-        initializer = tf.contrib.layers.variance_scaling_initializer()
+        #initializer = tf.contrib.layers.variance_scaling_initializer()
+        initializer = tf.contrib.layers.xavier_initializer()
 
         # Embedding layer
         with tf.device('/cpu:0'), tf.name_scope("embedding_words"):
@@ -49,11 +50,12 @@ class TextCNN(object):
         # Create a convolution + maxpool layer for each filter size
         pooled_outputs = []
         for i, filter_size in enumerate(filter_sizes):
-            with tf.name_scope("conv-maxpool-%s" % filter_size):
+            with tf.variable_scope("conv-maxpool-%s" % filter_size):
                 # Convolution Layer
                 filter_shape = [filter_size, embedding_size, 4, num_filters]
-                W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
-                b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
+                #W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
+                W = tf.get_variable("conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
+                b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="conv_b_{}".format(filter_size))
                 conv = tf.nn.conv2d(
                     cnn_inputs,
                     W,
