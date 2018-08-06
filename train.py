@@ -107,7 +107,9 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
             global_step = tf.Variable(0, name="global_step", trainable=False)
             optimizer = tf.train.AdamOptimizer(1e-3)
             grads_and_vars = optimizer.compute_gradients(cnn.loss)
-            train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
+            update_op = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+            with tf.control_dependencies(update_op):
+                train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 
             # Keep track of gradient values and sparsity (optional)
             grad_summaries = []
@@ -173,7 +175,8 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
                   cnn.input_deps: deps_batch,
                   cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
-                  cnn.dropout_keep_prob: FLAGS.dropout_keep_prob
+                  cnn.dropout_keep_prob: FLAGS.dropout_keep_prob,
+                  cnn.is_training: True
                 }
                 _, step, summaries, loss, accuracy = sess.run(
                     [train_op, global_step, train_summary_op, cnn.loss, cnn.accuracy],
@@ -192,7 +195,8 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
                   cnn.input_deps: deps_batch,
                   cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
-                  cnn.dropout_keep_prob: 1.0
+                  cnn.dropout_keep_prob: 1.0,
+                  cnn.is_training: False
                 }
                 step, summaries, loss, accuracy = sess.run(
                     [global_step, dev_summary_op, cnn.loss, cnn.accuracy],

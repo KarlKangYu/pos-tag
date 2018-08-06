@@ -16,6 +16,7 @@ class TextCNN(object):
         self.input_head = tf.placeholder(tf.int32, [None, sequence_length], name="input_head")
         self.input_y = tf.placeholder(tf.float32, [None, num_classes], name="input_y")
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.is_training = tf.placeholder(tf.bool, name="is_training")
 
         # Keeping track of l2 regularization loss (optional)
         l2_loss = tf.constant(0.0)
@@ -59,6 +60,8 @@ class TextCNN(object):
                     strides=[1, 1, 1, 1],
                     padding="VALID",
                     name="conv")
+                # Apply BN
+                conv = tf.layers.batch_normalization(conv, axis=0, training=self.is_training)
                 # Apply nonlinearity
                 h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
                 # Maxpooling over the outputs
