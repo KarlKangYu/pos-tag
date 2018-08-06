@@ -61,7 +61,7 @@ class TextCNN(object):
                     padding="VALID",
                     name="conv")
                 # Apply BN
-                conv = tf.layers.batch_normalization(conv, axis=0, training=self.is_training)
+                conv = tf.layers.batch_normalization(conv, axis=-1, training=self.is_training) #axis定的是channel在的维度。
                 # Apply nonlinearity
                 h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
                 # Maxpooling over the outputs
