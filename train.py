@@ -27,6 +27,7 @@ tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (d
 tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
+tf.flags.DEFINE_float("lr", 0.001, "L2 regularization lambda (default: 0.0)")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 256, "Batch Size (default: 64)")
@@ -105,7 +106,7 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
 
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
-            optimizer = tf.train.AdamOptimizer(1e-3)
+            optimizer = tf.train.AdamOptimizer(FLAGS.lr)
             grads_and_vars = optimizer.compute_gradients(cnn.loss)
             update_op = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
             with tf.control_dependencies(update_op):
