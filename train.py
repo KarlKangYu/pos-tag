@@ -43,6 +43,7 @@ tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on 
 # Model Saving Parameters
 tf.flags.DEFINE_boolean("restore_model", False, "Whether restore model or create new parameters")
 tf.flags.DEFINE_string("model_path", "runs", "Restore which model")
+tf.flags.DEFINE_string("model_name", "model", "Store model in which name")
 
 FLAGS = tf.flags.FLAGS
 # FLAGS._parse_flags()
@@ -124,7 +125,7 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
 
             # Output directory for models and summaries
             timestamp = str(int(time.time()))
-            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", FLAGS.model_name, timestamp))
             print("Writing to {}\n".format(out_dir))
 
             # Summaries for loss and accuracy

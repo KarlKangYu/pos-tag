@@ -21,7 +21,7 @@ class TextCNN(object):
         # Keeping track of l2 regularization loss (optional)
         l2_loss = tf.constant(0.0)
         #initializer = tf.contrib.layers.variance_scaling_initializer()
-        initializer = tf.contrib.layers.xavier_initializer()
+        initializer = tf.keras.initializers.he_normal()
 
         # Embedding layer
         with tf.device('/cpu:0'), tf.name_scope("embedding_words"):
