@@ -5,6 +5,7 @@ import sys
 
 def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
     probabilities = list()
+    i = int(i)
     for i in range(i):
         path = dir + str(i+1)
         with codecs.open(path, 'r', encoding="utf-8") as f:
