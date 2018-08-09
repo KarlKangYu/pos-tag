@@ -10,7 +10,7 @@ def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
         path = dir + str(i+1)
         with codecs.open(path, 'r', encoding="utf-8") as f:
             prob = f.readline()
-            prob = prob.strip()
+            prob = prob.strip().strip('#')
             prob = prob.split('#')
             b = []
             for pro in prob:
