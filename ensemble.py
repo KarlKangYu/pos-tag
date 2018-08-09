@@ -26,6 +26,7 @@ def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
     neg_y = np.sum(label == 1)
 
     probabilities = np.array(probabilities)
+    print(probabilities.shape)
     probability = np.mean(probabilities, axis=0)
     assert len(probability) == len(probabilities[0])
     pre = np.argmax(probability, 1)
