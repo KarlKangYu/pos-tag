@@ -124,5 +124,5 @@ if __name__ == "__main__":
     out_dir = args[5]
     filter_sizes = args[6]
 
-    test(pos_file, neg_file, i, ckpt_path, out_dir, filter_sizes)
+    test(pos_file, neg_file, i, ckpt_path, out_dir, filter_sizes=filter_sizes)
 
