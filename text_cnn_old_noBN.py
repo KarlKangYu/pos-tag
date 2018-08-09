@@ -52,7 +52,7 @@ class TextCNN(object):
         for i, filter_size in enumerate(filter_sizes):
             with tf.name_scope("conv-maxpool-%s" % filter_size):
                 # Convolution Layer
-                filter_shape = [filter_size, embedding_size, 1, num_filters]
+                filter_shape = [filter_size, embedding_size, 4, num_filters]
                 W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
                 b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
                 conv = tf.nn.conv2d(
