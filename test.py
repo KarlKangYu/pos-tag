@@ -24,6 +24,7 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
 
     TextCNN = [TextCNN1, TextCNN2, TextCNN3]
     i = int(i)
+    assert i >= 0 and i <= 2
 
     with tf.Graph().as_default():
         sess = tf.Session()
@@ -66,8 +67,16 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
             precision = count / np.sum(prediction == 1)
             print("Accuracy: {}, Recall:{}, Precision:{}".format(accuracy, recall, precision))
             print("\n")
+
+
             with codecs.open(out_dir, 'w', encoding="utf-8") as f:
-                f.write(str(probability) + "\n")
+                for prob in probability:
+                    pos, neg = prob
+                    pos = str(pos)
+                    neg = str(neg)
+                    f.write(pos + ',' + neg + '#')
+                f.write("\n")
+
 
 
 
