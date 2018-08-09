@@ -36,12 +36,13 @@ def test(pos_file, neg_file, ckpts_num, ckpts_path, sequence_length=30, words_vo
 
             sess.run(tf.global_variables_initializer())
 
+            ckpts_num = int(ckpts_num)
             ckpts_path = ckpts_path.strip().split('#')
             print(ckpts_path)
             print(len(ckpts_path))
-            assert int(ckpts_num) == len(ckpts_path)
+            assert ckpts_num == len(ckpts_path)
 
-            for i in range(int(ckpts_num)):
+            for i in range(ckpts_num):
                 ckpt_path = ckpts_path[i]
                 saver.restore(sess=sess, save_path=ckpt_path)
                 print("*" * 20 + "\nLoading The {} Model from {}:\n".format(i+1, ckpt_path))
@@ -52,7 +53,8 @@ def test(pos_file, neg_file, ckpts_num, ckpts_path, sequence_length=30, words_vo
                     cnn.input_deps: deps,
                     cnn.input_head: heads,
                     cnn.input_y: y,
-                    cnn.dropout_keep_prob: 1.0
+                    cnn.dropout_keep_prob: 1.0,
+                    cnn.is_training: False
                 }
 
                 prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy], feed_dict=feed_dict)
