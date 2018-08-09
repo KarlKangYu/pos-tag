@@ -133,6 +133,7 @@ if __name__ == "__main__":
     ckpt_path = args[4]
     out_dir = args[5]
     filter_sizes = args[6]
+    num_filters = args[7]
 
-    test(pos_file, neg_file, i, ckpt_path, out_dir, filter_sizes=filter_sizes)
+    test(pos_file, neg_file, i, ckpt_path, out_dir, filter_sizes=filter_sizes, num_filters=num_filters)
 
