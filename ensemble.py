@@ -15,8 +15,8 @@ def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
             b = []
             for pro in prob:
                 pos, neg = pro.split(',')
-                pos = int(pos)
-                neg = int(neg)
+                pos = float(pos)
+                neg = float(neg)
                 a = [pos, neg]
                 b.append(a)
         probabilities.append(b)
