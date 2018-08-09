@@ -23,6 +23,7 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
     #probabilities = list()
 
     TextCNN = [TextCNN1, TextCNN2, TextCNN3]
+    i = int(i)
 
     with tf.Graph().as_default():
         sess = tf.Session()
