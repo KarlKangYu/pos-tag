@@ -54,7 +54,7 @@ class TextCNN(object):
                 # Convolution Layer
                 filter_shape = [filter_size, embedding_size, 4, num_filters]
                 W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
-                b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
+                b = tf.Variable(tf.constant(0.1, shape=[2*num_filters]), name="b")
                 conv = tf.nn.conv2d(
                     cnn_inputs,
                     W,
