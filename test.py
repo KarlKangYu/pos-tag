@@ -28,7 +28,9 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
     assert i >= 0 and i <= 2
 
     with tf.Graph().as_default():
-        sess = tf.Session()
+        session_conf = tf.ConfigProto()
+        session_conf.gpu_options.allow_growth = True
+        sess = tf.Session(config=session_conf)
         with sess.as_default():
             cnn = TextCNN[i](
                 sequence_length=sequence_length,
