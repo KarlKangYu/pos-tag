@@ -53,11 +53,11 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
 
             probabilities = np.array([])
             for i in range(num_batches_per_epoch):
-                batch_x = x[i * 256, (i + 1) * 256]
-                batch_tags = tags[i * 256, (i + 1) * 256]
-                batch_deps = deps[i * 256, (i + 1) * 256]
-                batch_heads = heads[i * 256, (i + 1) * 256]
-                batch_y = y[i * 256, (i + 1) * 256]
+                batch_x = x[i * 256 : (i + 1) * 256]
+                batch_tags = tags[i * 256 : (i + 1) * 256]
+                batch_deps = deps[i * 256 : (i + 1) * 256]
+                batch_heads = heads[i * 256 : (i + 1) * 256]
+                batch_y = y[i * 256 : (i + 1) * 256]
 
                 feed_dict = {
                     cnn.input_x: batch_x,
