@@ -60,11 +60,11 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
                 batch_y = y[i * 256, (i + 1) * 256]
 
                 feed_dict = {
-                    cnn.input_x: x,
-                    cnn.input_tags: tags,
-                    cnn.input_deps: deps,
-                    cnn.input_head: heads,
-                    cnn.input_y: y,
+                    cnn.input_x: batch_x,
+                    cnn.input_tags: batch_tags,
+                    cnn.input_deps: batch_deps,
+                    cnn.input_head: batch_heads,
+                    cnn.input_y: batch_y,
                     cnn.dropout_keep_prob: 1.0,
                     cnn.is_training: False,
                     cnn.tempreture: tempreture
@@ -72,7 +72,7 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
 
                 prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
                                                              feed_dict=feed_dict)
-                probabilities = np.concatenate((probabilities, probability))
+                probabilities = np.concatenate((probabilities, probability), axis=0)
 
 
             # count = 0
@@ -84,7 +84,7 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
             # print("Accuracy: {}, Recall:{}, Precision:{}".format(accuracy, recall, precision))
             # print("\n")
 
-
+            print("probabilities length:", len(probabilities))
             with codecs.open(out_dir, 'w', encoding="utf-8") as f:
                 for prob in probabilities:
                     pos, neg = prob
