@@ -16,6 +16,9 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
     print("Loading Test data...")
     x, tags, deps, heads, y = data_loader.read_data(pos_file, neg_file, sequence_length)
 
+    data_size = len(y)
+    num_batches_per_epoch = (data_size // 256) + 1
+
     label = np.argmax(y, axis=1)
     neg_y = np.sum(label == 1)
     print("Negative Data Numbers:", neg_y)
@@ -48,33 +51,42 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
 
             saver.restore(sess=sess, save_path=ckpt_path)
 
-            feed_dict = {
-                cnn.input_x: x,
-                cnn.input_tags: tags,
-                cnn.input_deps: deps,
-                cnn.input_head: heads,
-                cnn.input_y: y,
-                cnn.dropout_keep_prob: 1.0,
-                cnn.is_training: False,
-                cnn.tempreture: tempreture
-            }
+            probabilities = np.array([])
+            for i in range(num_batches_per_epoch):
+                batch_x = x[i * 256, (i + 1) * 256]
+                batch_tags = tags[i * 256, (i + 1) * 256]
+                batch_deps = deps[i * 256, (i + 1) * 256]
+                batch_heads = heads[i * 256, (i + 1) * 256]
+                batch_y = y[i * 256, (i + 1) * 256]
 
-            prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
-                                                         feed_dict=feed_dict)
-            #probabilities.append(probability)
+                feed_dict = {
+                    cnn.input_x: x,
+                    cnn.input_tags: tags,
+                    cnn.input_deps: deps,
+                    cnn.input_head: heads,
+                    cnn.input_y: y,
+                    cnn.dropout_keep_prob: 1.0,
+                    cnn.is_training: False,
+                    cnn.tempreture: tempreture
+                }
 
-            count = 0
-            for i in range(len(prediction)):
-                if prediction[i] == 1 and prediction[i] == label[i]:
-                    count += 1
-            recall = count / neg_y
-            precision = count / np.sum(prediction == 1)
-            print("Accuracy: {}, Recall:{}, Precision:{}".format(accuracy, recall, precision))
-            print("\n")
+                prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
+                                                             feed_dict=feed_dict)
+                probabilities = np.concatenate((probabilities, probability))
+
+
+            # count = 0
+            # for i in range(len(prediction)):
+            #     if prediction[i] == 1 and prediction[i] == label[i]:
+            #         count += 1
+            # recall = count / neg_y
+            # precision = count / np.sum(prediction == 1)
+            # print("Accuracy: {}, Recall:{}, Precision:{}".format(accuracy, recall, precision))
+            # print("\n")
 
 
             with codecs.open(out_dir, 'w', encoding="utf-8") as f:
-                for prob in probability:
+                for prob in probabilities:
                     pos, neg = prob
                     pos = str(pos)
                     neg = str(neg)
