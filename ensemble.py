@@ -3,7 +3,7 @@ import numpy as np
 import data_loader
 import sys
 
-def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
+def ensemble(pos_file, neg_file, i, dir, soft_target_path, sequence_length=30):
     probabilities = list()
     i = int(i)
     for i in range(i):
@@ -12,12 +12,12 @@ def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
             prob = f.readline()
             prob = prob.strip().strip('#')
             prob = prob.split('#')
-            b = []
+            b = []        #b里包括一个文件（一个checkpoint）跑出的所有结果
             for pro in prob:
                 pos, neg = pro.split(',')
                 pos = float(pos)
                 neg = float(neg)
-                a = [pos, neg]
+                a = [pos, neg]     #a里包括一个样本跑出的结果
                 b.append(a)
         probabilities.append(b)
 
@@ -29,7 +29,7 @@ def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
     print(probabilities.shape)
     probability = np.mean(probabilities, axis=0)
     assert len(probability) == len(probabilities[0])
-    pre = np.argmax(probability, 1)
+    pre = np.argmax(probability, axis=1)
     accuracy = np.sum(pre == label) / len(label)
     count = 0
     for i in range(len(pre)):
@@ -42,12 +42,27 @@ def ensemble(pos_file, neg_file, i, dir, sequence_length=30):
     print("Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
     print("\n" + "*" * 20)
 
+    print("-" * 20 + "\nWriting soft-target!\n" + "-" * 20)
+    assert len(probability) == len(y) and len(pre) == len(label)
+    print("Data Numbers:", len(probability))
+    with codecs.open(soft_target_path, "w", encoding="utf-8") as ff:
+        for i in range(len(pre)):
+            if pre[i] == label[i]:
+                soft_target = 0.1 * y[i] + 0.9 * probability[i]
+            else:
+                soft_target = 0.4 * y[i] + 0.6 * probability[i]
+
+            soft_target = str(soft_target)
+            ff.write(x[i] + "#" + tags[i] + "#" + deps[i] + "#" + heads[i] + "\t" + soft_target + "\n")
+
+
 if __name__ == "__main__":
     args = sys.argv
     pos_file = args[1]
     neg_file = args[2]
     i = args[3]
     dir = args[4]
-    ensemble(pos_file, neg_file, i, dir)
+    soft_target_path = args[5]
+    ensemble(pos_file, neg_file, i, dir, soft_target_path)
 
 

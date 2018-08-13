@@ -16,6 +16,7 @@ class TextCNN(object):
         self.input_head = tf.placeholder(tf.int32, [None, sequence_length], name="input_head")
         self.input_y = tf.placeholder(tf.float32, [None, num_classes], name="input_y")
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.tempreture = tf.placeholder(tf.float32, name="Tempreture")
         self.is_training = tf.placeholder(tf.bool, name="is_training")
 
         # Keeping track of l2 regularization loss (optional)
@@ -95,7 +96,7 @@ class TextCNN(object):
             l2_loss += tf.nn.l2_loss(b)
             self.scores = tf.nn.xw_plus_b(self.h_drop, W, b, name="scores")
             self.predictions = tf.argmax(self.scores, 1, name="predictions")
-            self.probabilities = tf.nn.softmax(self.scores)
+            self.probabilities = tf.nn.softmax(self.scores / self.tempreture)
 
         # Calculate mean cross-entropy loss
         with tf.name_scope("loss"):

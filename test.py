@@ -8,7 +8,7 @@ import sys
 import codecs
 
 def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
-         deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128):
+         deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128, tempreture=20):
     # Data Preparation
     # ==================================================
 
@@ -53,7 +53,8 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
                 cnn.input_head: heads,
                 cnn.input_y: y,
                 cnn.dropout_keep_prob: 1.0,
-                cnn.is_training: False
+                cnn.is_training: False,
+                cnn.tempreture: tempreture
             }
 
             prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],

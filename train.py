@@ -178,7 +178,8 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
                   cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
                   cnn.dropout_keep_prob: FLAGS.dropout_keep_prob,
-                  cnn.is_training: True
+                  cnn.is_training: True,
+                  cnn.tempreture: 20
                 }
                 _, step, summaries, loss, accuracy = sess.run(
                     [train_op, global_step, train_summary_op, cnn.loss, cnn.accuracy],
@@ -198,7 +199,8 @@ def train(x_train, tags_train, deps_train, heads_train, y_train, x_dev, tags_dev
                   cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
                   cnn.dropout_keep_prob: 1.0,
-                  cnn.is_training: False
+                  cnn.is_training: False,
+                  cnn.tempreture: 1
                 }
                 step, summaries, loss, accuracy = sess.run(
                     [global_step, dev_summary_op, cnn.loss, cnn.accuracy],
