@@ -51,7 +51,7 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
 
             saver.restore(sess=sess, save_path=ckpt_path)
 
-            probabilities = np.array([])
+
             for i in range(num_batches_per_epoch):
                 batch_x = x[i * 256 : (i + 1) * 256]
                 batch_tags = tags[i * 256 : (i + 1) * 256]
@@ -72,7 +72,11 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
 
                 prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
                                                              feed_dict=feed_dict)
-                probabilities = np.concatenate((probabilities, probability), axis=0)
+
+                if i == 0:
+                    probabilities = probability
+                else:
+                    probabilities = np.concatenate((probabilities, probability), axis=0)
 
 
             # count = 0
