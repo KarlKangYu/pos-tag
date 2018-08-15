@@ -52,8 +52,9 @@ def ensemble(pos_file, neg_file, i, dir, soft_target_path, sequence_length=30):
             else:
                 soft_target = 0.4 * y[i] + 0.6 * probability[i]
 
-            soft_target = str(soft_target)
-            ff.write(str(x[i]) + "#" + str(tags[i]) + "#" + str(deps[i]) + "#" + str(heads[i]) + "\t" + soft_target + "\n")
+            pos, neg = soft_target
+            pos, neg = str(pos), str(neg)
+            ff.write(pos + "," + neg + "\n")
 
 
 if __name__ == "__main__":
