@@ -1,12 +1,13 @@
 import codecs
 import numpy as np
 
-def read_data(data_path_pos, data_path_neg, max_sequence_length):
+def read_data(data_path_pos, data_path_neg, data_path_soft_target, max_sequence_length):
     x = list()
     input_tags = list()
     input_deps = list()
     input_head = list()
     y = list()
+    soft_targets = list()
 
     with codecs.open(data_path_pos, 'r') as f1:
         for line in f1.readlines():
@@ -54,7 +55,14 @@ def read_data(data_path_pos, data_path_neg, max_sequence_length):
             input_deps.append(deps)
             input_head.append(heads)
 
-    return np.array(x), np.array(input_tags), np.array(input_deps), np.array(input_head), np.array(y)
+    with codecs.open(data_path_soft_target, 'r') as f3:
+        for line in f3.readlines():
+            line = line.strip()
+            pos, neg = line.split(",")
+            pos, neg = float(pos), float(neg)
+            soft_targets.append([pos, neg])
+
+    return np.array(x), np.array(input_tags), np.array(input_deps), np.array(input_head), np.array(y), np.array(soft_targets)
 
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
     data = np.array(data)
