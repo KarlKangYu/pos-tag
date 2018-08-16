@@ -47,11 +47,7 @@ def ensemble(pos_file, neg_file, i, dir, soft_target_path, sequence_length=30):
     print("Data Numbers:", len(probability))
     with codecs.open(soft_target_path, "w", encoding="utf-8") as ff:
         for i in range(len(pre)):
-            if pre[i] == label[i]:
-                soft_target = 0.1 * y[i] + 0.9 * probability[i]
-            else:
-                soft_target = 0.4 * y[i] + 0.6 * probability[i]
-
+            soft_target = probability[i]
             pos, neg = soft_target
             pos, neg = str(pos), str(neg)
             ff.write(pos + "," + neg + "\n")
