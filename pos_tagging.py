@@ -11,7 +11,14 @@ def pos_tagging(data_in, data_out):
                 f2.write(line + "#")
                 doc = nlp(line)
                 for token in doc:
-                    tag = token.tag_
+                    if token.pos_ in ['VERB', 'ADJ', 'ADV', 'NOUN', 'PROPN'] and token.tag_ not in ['AFX', 'EX', 'HVS', 'PRP$', 'WDT', 'WP', 'WP$', 'WRB']:
+                        if token.text in ['am', 'is', 'are', 'was', 'were']:
+                            tag = token.text
+                        else:
+                            tag = token.tag_
+                    else:
+                        tag = token.text
+
                     f2.write(tag + " ")
                 f2.write("\n")
 
