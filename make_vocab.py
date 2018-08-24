@@ -6,46 +6,64 @@ def make_vocab(pos_tag, detailed, pos, vocab_tag2, vocab_detailed, vocab_pos):
     vocab2 = {"_PAD":0, "<unk>":1}
     vocab3 = {"_PAD":0, "<unk>":1}
     i = 2
+    j = 0
     with codecs.open(pos_tag, "r") as f1:
         for line in f1.readlines():
             line = line.strip()
-            _, toks = line.split("#")
-            toks = toks.strip()
-            toks = toks.split()
-            for tok in toks:
-                if tok not in vocab1:
-                    vocab1[tok] = i
-                    i += 1
-                else:
-                    continue
+            try:
+                _, toks = line.split("#")
+                toks = toks.strip()
+                toks = toks.split()
+                for tok in toks:
+                    if tok not in vocab1:
+                        vocab1[tok] = i
+                        i += 1
+                    else:
+                        continue
+                j += 1
+            except:
+                print("file1 No.", j, "line has #")
+                j += 1
 
+    j = 0
     i = 2
     with codecs.open(detailed, "r") as f2:
         for line in f2.readlines():
             line = line.strip()
-            _, toks = line.split("#")
-            toks = toks.strip()
-            toks = toks.split()
-            for tok in toks:
-                if tok not in vocab2:
-                    vocab2[tok] = i
-                    i += 1
-                else:
-                    continue
+            try:
+                _, toks = line.split("#")
+                toks = toks.strip()
+                toks = toks.split()
+                for tok in toks:
+                    if tok not in vocab2:
+                        vocab2[tok] = i
+                        i += 1
+                    else:
+                        continue
+                j += 1
+            except:
+                print("file2 No.", j, "line has #")
+                j += 1
 
+    j = 0
     i = 2
     with codecs.open(pos, "r") as f3:
         for line in f3.readlines():
             line = line.strip()
-            _, toks = line.split("#")
-            toks = toks.strip()
-            toks = toks.split()
-            for tok in toks:
-                if tok not in vocab3:
-                    vocab3[tok] = i
-                    i += 1
-                else:
-                    continue
+            try:
+                _, toks = line.split("#")
+                toks = toks.strip()
+                toks = toks.split()
+                for tok in toks:
+                    if tok not in vocab3:
+                        vocab3[tok] = i
+                        i += 1
+                    else:
+                        continue
+                j += 1
+            except:
+                print("file3 No.", j, "line has #")
+                j += 1
 
 
     with codecs.open(vocab_tag2, 'w') as f4:
