@@ -54,6 +54,7 @@ if __name__ == "__main__":
     data_in = args[1]
     data_out = args[2]
     i = args[3]
+    i = int(i)
     if i == 1:
         pos_tagging(data_in, data_out)
     elif i == 2:

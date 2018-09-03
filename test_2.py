@@ -61,7 +61,7 @@ def test(pos_file, neg_file, ckpt_path, sequence_length=30, words_vocab_size=500
                                                          feed_dict=feed_dict)
 
     count = 0
-    pre = np.argmax(prediction, axis=1)
+    pre = prediction
     number = np.sum(pre == 1)
     for i in range(len(pre)):
         if pre[i] == 1 and label[i] == pre[i]:
