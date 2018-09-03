@@ -7,7 +7,7 @@ from text_cnn_old_noBN import TextCNN as TextCNN3
 import sys
 import codecs
 
-def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
+def test(pos_file, neg_file, i, ckpt_path, sequence_length=30, words_vocab_size=50000, tags_vocab_size=44, ensemble=True,
          deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128, tempreture=1):
     # Data Preparation
     # ==================================================
@@ -16,8 +16,8 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
     print("Loading Test data...")
     x, tags, deps, heads, y = data_loader.read_data(pos_file, neg_file, sequence_length)
 
-    data_size = len(y)
-    num_batches_per_epoch = (data_size // 256) + 1
+    # data_size = len(y)
+    # num_batches_per_epoch = (data_size // 256) + 1
 
     label = np.argmax(y, axis=1)
     neg_y = np.sum(label == 1)
@@ -52,31 +52,41 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
             saver.restore(sess=sess, save_path=ckpt_path)
 
 
-            for i in range(num_batches_per_epoch):
-                batch_x = x[i * 256 : (i + 1) * 256]
-                batch_tags = tags[i * 256 : (i + 1) * 256]
-                batch_deps = deps[i * 256 : (i + 1) * 256]
-                batch_heads = heads[i * 256 : (i + 1) * 256]
-                batch_y = y[i * 256 : (i + 1) * 256]
+            # for i in range(num_batches_per_epoch):
+            #     batch_x = x[i * 256 : (i + 1) * 256]
+            #     batch_tags = tags[i * 256 : (i + 1) * 256]
+            #     batch_deps = deps[i * 256 : (i + 1) * 256]
+            #     batch_heads = heads[i * 256 : (i + 1) * 256]
+            #     batch_y = y[i * 256 : (i + 1) * 256]
 
-                feed_dict = {
-                    cnn.input_x: batch_x,
-                    cnn.input_tags: batch_tags,
-                    cnn.input_deps: batch_deps,
-                    cnn.input_head: batch_heads,
-                    cnn.input_y: batch_y,
-                    cnn.dropout_keep_prob: 1.0,
-                    cnn.is_training: False,
-                    cnn.tempreture: tempreture
-                }
+            feed_dict = {
+                cnn.input_x: x,
+                cnn.input_tags: tags,
+                cnn.input_deps: deps,
+                cnn.input_head: heads,
+                cnn.input_y: y,
+                cnn.dropout_keep_prob: 1.0,
+                cnn.is_training: False,
+                cnn.tempreture: tempreture
+            }
 
-                prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
-                                                             feed_dict=feed_dict)
+            prediction, probability, accuracy = sess.run([cnn.predictions, cnn.probabilities, cnn.accuracy],
+                                                         feed_dict=feed_dict)
 
-                if i == 0:
-                    probabilities = probability
-                else:
-                    probabilities = np.concatenate((probabilities, probability), axis=0)
+    count = 0
+    for i in range(prediction):
+        if prediction[i] == label[i] and prediction[i] == 1:
+            count += 1
+    recall = count / neg_y
+    precision = count / np.sum(prediction == 1)
+    print("Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
+
+
+
+            # if i == 0:
+            #     probabilities = probability
+            # else:
+            #     probabilities = np.concatenate((probabilities, probability), axis=0)
 
 
             # count = 0
@@ -88,14 +98,14 @@ def test(pos_file, neg_file, i, ckpt_path, out_dir, sequence_length=30, words_vo
             # print("Accuracy: {}, Recall:{}, Precision:{}".format(accuracy, recall, precision))
             # print("\n")
 
-            print("probabilities length:", len(probabilities))
-            with codecs.open(out_dir, 'w', encoding="utf-8") as f:
-                for prob in probabilities:
-                    pos, neg = prob
-                    pos = str(pos)
-                    neg = str(neg)
-                    f.write(pos + ',' + neg + '#')
-                f.write("\n")
+            # print("probabilities length:", len(probabilities))
+            # with codecs.open(out_dir, 'w', encoding="utf-8") as f:
+            #     for prob in probabilities:
+            #         pos, neg = prob
+            #         pos = str(pos)
+            #         neg = str(neg)
+            #         f.write(pos + ',' + neg + '#')
+            #     f.write("\n")
 
 
 
@@ -151,9 +161,8 @@ if __name__ == "__main__":
     neg_file = args[2]
     i = args[3]
     ckpt_path = args[4]
-    out_dir = args[5]
-    filter_sizes = args[6]
-    num_filters = args[7]
+    filter_sizes = args[5]
+    num_filters = args[6]
 
-    test(pos_file, neg_file, i, ckpt_path, out_dir, filter_sizes=filter_sizes, num_filters=num_filters)
+    test(pos_file, neg_file, i, ckpt_path, filter_sizes=filter_sizes, num_filters=num_filters)
 
