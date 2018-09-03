@@ -19,6 +19,7 @@ def read_prob(prob_path):
                 a = [pos, neg]  # a里包括一个样本跑出的结果
                 b.append(a)
         pre = np.argmax(b, axis=1)
+        print("pre len:", len(pre), "label len:", len(label))
         assert len(pre) == len(label)
         count = 0
         for j in range(len(pre)):
@@ -40,4 +41,3 @@ if __name__ == "__main__":
     prob_path = args[1]
     read_prob(prob_path)
 
-            
