@@ -53,4 +53,10 @@ if __name__ == "__main__":
     args = sys.argv
     data_in = args[1]
     data_out = args[2]
-    tagging(data_in, data_out)
+    i = args[3]
+    if i == 1:
+        pos_tagging(data_in, data_out)
+    elif i == 2:
+        pos(data_in, data_out)
+    elif i == 3:
+        tagging(data_in, data_out)
