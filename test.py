@@ -74,7 +74,7 @@ def test(pos_file, neg_file, i, ckpt_path, sequence_length=30, words_vocab_size=
                                                          feed_dict=feed_dict)
 
     count = 0
-    for i in range(prediction):
+    for i in range(len(prediction)):
         if prediction[i] == label[i] and prediction[i] == 1:
             count += 1
     recall = count / neg_y
