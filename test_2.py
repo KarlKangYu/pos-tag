@@ -3,10 +3,10 @@ import numpy as np
 import data_loader_2 as data_loader
 from text_cnn import TextCNN
 import sys
+import codecs
 
 
-
-def test(pos_file, neg_file, ckpt_path, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51, ensemble=True,
+def test(pos_file, neg_file, ckpt_path, pos_data, neg_data, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51, ensemble=True,
          deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128, tempreture=1):
     # Data Preparation
     # ==================================================
@@ -72,6 +72,32 @@ def test(pos_file, neg_file, ckpt_path, sequence_length=30, words_vocab_size=500
 
     print("Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
 
+    index = []
+    for i in range(len(pre)):
+        if pre[i] != label[i]:
+            if i < 4158:
+                index.append([i, 4158+i])
+            else:
+                index.append([4158-i, i])
+
+    ff = codecs.open(pos_data, 'r')
+    a1 = ff.readlines()
+    ff.close()
+    ff = codecs.open(neg_data, 'r')
+    a2 = ff.readlines()
+    ff.close()
+    a1 = a1 + a2
+    del a2
+    assert len(a1) == len(pre)
+    with codecs.open(out, 'w') as ff:
+        for ind in index:
+            ind1, ind2 = ind
+            posline, negline = a1[ind1], a1[ind2]
+            ff.write(posline + "#" * 10 + negline + "\n")
+
+
+
+
 
 if __name__ == "__main__":
     args = sys.argv
@@ -79,8 +105,11 @@ if __name__ == "__main__":
     neg_file = args[2]
     tags_vocab_size = args[3]
     ckpt_path = args[4]
-    filter_sizes = args[5]
-    num_filters = args[6]
+    posdata = args[5]
+    negdata = args[6]
+    out = args[7]
+    filter_sizes = args[8]
+    num_filters = args[9]
 
-    test(pos_file, neg_file, ckpt_path, tags_vocab_size=tags_vocab_size, filter_sizes=filter_sizes, num_filters=num_filters)
+    test(pos_file, neg_file, ckpt_path, pos_data=posdata, neg_data=negdata, out=out, tags_vocab_size=tags_vocab_size, filter_sizes=filter_sizes, num_filters=num_filters)
 
