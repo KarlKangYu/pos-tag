@@ -93,7 +93,7 @@ def test(pos_file, neg_file, ckpt_path, pos_data, neg_data, out, sequence_length
         for ind in index:
             ind1, ind2 = ind
             posline, negline = a1[ind1], a1[ind2]
-            ff.write(posline + "#" * 10 + negline + "\n")
+            ff.write(posline.strip() + "#" * 10 + negline.strip() + "\n")
 
 
 
