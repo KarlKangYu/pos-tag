@@ -20,6 +20,9 @@ tf.flags.DEFINE_integer("max_sentence_length", 30, "Max sentence length in train
 #tf.flags.DEFINE_integer("min_frequency", 10, "Min word frequency to be contained in vocab list")
 tf.flags.DEFINE_integer('words_vocab_size', 50000,                             'words vocab size')
 tf.flags.DEFINE_integer('tags_vocab_size', 44,                             'tags vocab size')
+#tag2:51
+#detailed: 12363
+#pos:17
 tf.flags.DEFINE_integer('deps_vocab_size', 47,                             'deps vocab size')
 
 # Model Hyperparameters

@@ -48,6 +48,35 @@ def tagging(data_in, data_out):
                     f2.write(tag + ' ')
                 f2.write("\n")
 
+def name_entity(data_in, data_out):
+    nlp = spacy.load("en")
+    with codecs.open(data_in, "r") as f1:
+        with codecs.open(data_out, "w") as f2:
+            for line in f1.readlines():
+                line = line.strip()
+                f2.write(line + "\t#\t")
+                doc = nlp(line)
+                for token in doc:
+                    tag = token.tag_
+                    f2.write(tag + ' ')
+                f2.write("\t#\t")
+                l = len(doc)
+                i = 0
+                for ent in doc.ents:
+                    while i < l:
+                        if ent.text == doc[i].text:
+                            f2.write(ent.label_ + ' ')
+                            i += 1
+                            break
+                        else:
+                            f2.write('0' + ' ')
+                            i += 1
+                if i != l:
+                    f2.write("0 " * (l - i))
+                f2.write("\n")
+
+
+
 
 if __name__ == "__main__":
     args = sys.argv
@@ -61,3 +90,5 @@ if __name__ == "__main__":
         pos(data_in, data_out)
     elif i == 3:
         tagging(data_in, data_out)
+    elif i == 4:
+        name_entity(data_in, data_out)
