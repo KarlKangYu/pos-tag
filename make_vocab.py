@@ -79,7 +79,47 @@ def make_vocab(pos_tag, detailed, pos, vocab_tag2, vocab_detailed, vocab_pos):
             f6.write(key + "##" + str(vocab3[key]) + "\n")
 
 
+
+
+def make_vocab_2(data_in, vocab_tags, vocab_names):
+    dict_tags = {"_PAD":0, "<unk>":1}
+    dict_names = {"_PAD":0, "<unk>":1}
+    i = 2
+    j = 2
+
+    with codecs.open(data_in, 'r') as f1:
+        for line in f1.readlines():
+            line = line.strip()
+            _, pos_tags, name_entities = line.split("\t#\t")
+            pos_tags = pos_tags.strip().split()
+            name_entities = name_entities.strip().split()
+            for tag in pos_tags:
+                if tag not in dict_tags:
+                    dict_tags[tag] = i
+                    i += 1
+                else:
+                    continue
+
+            for name in name_entities:
+                if name == "0":
+                    name = "<not name entity>"
+                if name not in dict_names:
+                    dict_names[name] = j
+                    j += 1
+                else:
+                    continue
+
+    with codecs.open(vocab_tags, 'w') as f2:
+        for key in dict_tags:
+            f2.write(key + "##" + str(dict_tags[key]) + "\n")
+
+    with codecs.open(vocab_names, 'w') as f3:
+        for key in dict_names:
+            f3.write(key + "##" + str(dict_names[key]) + "\n")
+
+
+
 if __name__ == "__main__":
     args = sys.argv
-    pos_tag, detailed, pos, vocab_tag2, vocab_detailed, vocab_pos = args[1], args[2], args[3], args[4], args[5], args[6]
-    make_vocab(pos_tag, detailed, pos, vocab_tag2, vocab_detailed, vocab_pos)
+    data_in, vocab_tags, vocab_names = args[1], args[2], args[3]
+    make_vocab_2(data_in, vocab_tags, vocab_names)
