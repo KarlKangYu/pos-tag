@@ -19,11 +19,11 @@ tf.flags.DEFINE_string("soft_target_data_file", "./data/rt-polaritydata/rt-polar
 tf.flags.DEFINE_integer("max_sentence_length", 30, "Max sentence length in train/test data (Default: 50)")
 #tf.flags.DEFINE_integer("min_frequency", 10, "Min word frequency to be contained in vocab list")
 tf.flags.DEFINE_integer('words_vocab_size', 50000,                             'words vocab size')
-tf.flags.DEFINE_integer('tags_vocab_size', 44,                             'tags vocab size')
+tf.flags.DEFINE_integer('tags_vocab_size', 51,                             'pos-tags vocab size')
 #tag2:51
 #detailed: 12363
 #pos:17
-tf.flags.DEFINE_integer('deps_vocab_size', 47,                             'deps vocab size')
+tf.flags.DEFINE_integer('names_vocab_size', 20,                             'name-entities vocab size')
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_dim", 300, "Dimensionality of character embedding (default: 128)")
@@ -62,13 +62,14 @@ def preprocess():
 
     # Load data
     print("Loading data...")
-    x, tags, y = data_loader.read_data(FLAGS.positive_data_file, FLAGS.negative_data_file, FLAGS.max_sentence_length)
+    x, tags, names, y = data_loader.read_data(FLAGS.positive_data_file, FLAGS.negative_data_file, FLAGS.max_sentence_length)
 
     # Randomly shuffle data
     np.random.seed(10)
     shuffle_indices = np.random.permutation(np.arange(len(y)))
     x_shuffled = x[shuffle_indices]
     tags_shuffled = tags[shuffle_indices]
+    names_shuffled = names[shuffle_indices]
     # deps_shuffled = deps[shuffle_indices]
     # heads_shuffled = heads[shuffle_indices]
     y_shuffled = y[shuffle_indices]
@@ -78,6 +79,7 @@ def preprocess():
         shuffle_indices = np.random.permutation(np.arange(len(y)))
         x_shuffled = x_shuffled[shuffle_indices]
         tags_shuffled = tags_shuffled[shuffle_indices]
+        names_shuffled = names_shuffled[shuffle_indices]
         y_shuffled = y_shuffled[shuffle_indices]
 
     # Split train/test set
@@ -85,17 +87,18 @@ def preprocess():
     dev_sample_index = -1 * int(FLAGS.dev_sample_percentage * float(len(y)))
     x_train, x_dev = x_shuffled[:dev_sample_index], x_shuffled[dev_sample_index:]
     tags_train, tags_dev = tags_shuffled[:dev_sample_index], tags_shuffled[dev_sample_index:]
+    names_train, names_dev = names_shuffled[:dev_sample_index], names_shuffled[dev_sample_index:]
     # deps_train, deps_dev = deps_shuffled[:dev_sample_index], deps_shuffled[dev_sample_index:]
     # heads_train, heads_dev = heads_shuffled[:dev_sample_index], heads_shuffled[dev_sample_index:]
     y_train, y_dev = y_shuffled[:dev_sample_index], y_shuffled[dev_sample_index:]
     # soft_train, soft_dev = soft_shuffled[:dev_sample_index], soft_shuffled[dev_sample_index:]
 
-    del x, y, x_shuffled, y_shuffled, tags, tags_shuffled
+    del x, y, x_shuffled, y_shuffled, tags, tags_shuffled, names, names_shuffled
 
     print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
-    return x_train, tags_train, y_train, x_dev, tags_dev, y_dev
+    return x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev, y_dev
 
-def train(x_train, tags_train, y_train, x_dev, tags_dev, y_dev):
+def train(x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev, y_dev):
     # Training
     # ==================================================
 
@@ -111,7 +114,7 @@ def train(x_train, tags_train, y_train, x_dev, tags_dev, y_dev):
                 num_classes=2,
                 vocab_size=FLAGS.words_vocab_size,
                 tags_vocab_size=FLAGS.tags_vocab_size,
-                deps_vocab_size=FLAGS.deps_vocab_size,
+                name_vocab_size=FLAGS.names_vocab_size,
                 embedding_size=FLAGS.embedding_dim,
                 filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
                 num_filters=FLAGS.num_filters,
@@ -179,13 +182,14 @@ def train(x_train, tags_train, y_train, x_dev, tags_dev, y_dev):
             else:
                 print("*" * 20 + "\nCreated model with fresh parameters.\n" + "*" * 20)
 
-            def train_step(x_batch, tags_batch, y_batch):
+            def train_step(x_batch, tags_batch, names_batch, y_batch):
                 """
                 A single training step
                 """
                 feed_dict = {
                   cnn.input_x: x_batch,
                   cnn.input_tags: tags_batch,
+                  cnn.input_name_entity:names_batch,
                   # cnn.input_deps: deps_batch,
                   # cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
@@ -201,13 +205,14 @@ def train(x_train, tags_train, y_train, x_dev, tags_dev, y_dev):
                 print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
                 train_summary_writer.add_summary(summaries, step)
 
-            def dev_step(x_batch, tags_batch, y_batch, writer=None):
+            def dev_step(x_batch, tags_batch, names_batch, y_batch, writer=None):
                 """
                 Evaluates model on a dev set
                 """
                 feed_dict = {
                   cnn.input_x: x_batch,
                   cnn.input_tags: tags_batch,
+                  cnn.input_name_entity: names_batch,
                   # cnn.input_deps: deps_batch,
                   # cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
@@ -226,23 +231,23 @@ def train(x_train, tags_train, y_train, x_dev, tags_dev, y_dev):
 
             # Generate batches
             batches = data_loader.batch_iter(
-                list(zip(x_train, tags_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
+                list(zip(x_train, tags_train, names_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
             # Training loop. For each batch...
             for batch in batches:
-                x_batch, tags_batch, y_batch = zip(*batch)
-                train_step(x_batch, tags_batch, y_batch)
+                x_batch, tags_batch, names_batch, y_batch = zip(*batch)
+                train_step(x_batch, tags_batch, names_batch, y_batch)
                 current_step = tf.train.global_step(sess, global_step)
                 if current_step % FLAGS.evaluate_every == 0:
                     print("\nEvaluation:")
-                    dev_step(x_dev, tags_dev, y_dev, writer=dev_summary_writer)
+                    dev_step(x_dev, tags_dev, names_dev, y_dev, writer=dev_summary_writer)
                     print("")
                 if current_step % FLAGS.checkpoint_every == 0:
                     path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                     print("Saved model checkpoint to {}\n".format(path))
 
 def main(argv=None):
-    x_train, tags_train, y_train, x_dev, tags_dev, y_dev = preprocess()
-    train(x_train, tags_train, y_train, x_dev, tags_dev, y_dev)
+    x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev, y_dev = preprocess()
+    train(x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev, y_dev)
 
 if __name__ == '__main__':
     tf.app.run()

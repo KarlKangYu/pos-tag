@@ -5,39 +5,48 @@ import numpy as np
 def read_data(data_path_pos, data_path_neg, max_sequence_length):
     x = list()
     input_tags = list()
+    input_name_entities = list()
     y = list()
 
     with codecs.open(data_path_pos, 'r') as f1:
         for line in f1.readlines():
             line = line.strip()
-            words, tags = line.split("#")
+            words, tags, name_entities = line.split("\t#\t")
             words = words.strip().split()
             tags = tags.strip().split()
+            name_entities = name_entities.strip().split()
             words = words[:max_sequence_length]
             seqlen = len(words)
             words = words + [0] * max(0, max_sequence_length - seqlen)
             x.append(words)
             tags = tags[:max_sequence_length]
             tags = tags + [0] * max(0, max_sequence_length - len(tags))
+            name_entities = name_entities[:max_sequence_length]
+            name_entities = name_entities + [0] * max(0, max_sequence_length - len(name_entities))
             y.append([1, 0])
             input_tags.append(tags)
+            input_name_entities.append(name_entities)
 
     with codecs.open(data_path_neg, 'r') as f2:
         for line in f2.readlines():
             line = line.strip()
-            words, tags = line.split("#")
+            words, tags, name_entities = line.split("\t#\t")
             words = words.strip().split()
             tags = tags.strip().split()
+            name_entities = name_entities.strip().split()
             words = words[:max_sequence_length]
             seqlen = len(words)
             words = words + [0] * max(0, max_sequence_length - seqlen)
             x.append(words)
             tags = tags[:max_sequence_length]
             tags = tags + [0] * max(0, max_sequence_length - len(tags))
+            name_entities = name_entities[:max_sequence_length]
+            name_entities = name_entities + [0] * max(0, max_sequence_length - len(name_entities))
             y.append([0, 1])
             input_tags.append(tags)
+            input_name_entities.append(name_entities)
 
-    return np.array(x), np.array(input_tags), np.array(y)
+    return np.array(x), np.array(input_tags), np.array(input_name_entities), np.array(y)
 
 
 
