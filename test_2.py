@@ -6,14 +6,14 @@ import sys
 import codecs
 
 
-def test(pos_file, neg_file, ckpt_path, pos_data, neg_data, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51, ensemble=True,
-         deps_vocab_size=47, embedding_dim=300, filter_sizes="3,4,5", num_filters=128, tempreture=1):
+def test(pos_file, neg_file, ckpt_path, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51,
+         name_vocab_size=20, embedding_dim=300, filter_sizes="3,4,5", filter_sizes2="4,5,6,7,8,10,13", num_filters=256, tempreture=1):
     # Data Preparation
     # ==================================================
 
     # Load test data
     print("Loading Test data...")
-    x, tags, y = data_loader.read_data(pos_file, neg_file, sequence_length)
+    x, tags, names, y = data_loader.read_data(pos_file, neg_file, sequence_length)
 
     # data_size = len(y)
     # num_batches_per_epoch = (data_size // 256) + 1
@@ -37,9 +37,10 @@ def test(pos_file, neg_file, ckpt_path, pos_data, neg_data, out, sequence_length
                 num_classes=2,
                 vocab_size=words_vocab_size,
                 tags_vocab_size=tags_vocab_size,
-                deps_vocab_size=deps_vocab_size,
+                name_vocab_size=name_vocab_size,
                 embedding_size=embedding_dim,
                 filter_sizes=list(map(int, filter_sizes.split(","))),
+                filter_sizes2=list(map(int, filter_sizes2.split(","))),
                 num_filters=num_filters)
 
             saver = tf.train.Saver(tf.global_variables(), max_to_keep=100)
@@ -51,6 +52,7 @@ def test(pos_file, neg_file, ckpt_path, pos_data, neg_data, out, sequence_length
             feed_dict = {
                 cnn.input_x: x,
                 cnn.input_tags: tags,
+                cnn.input_name_entity: names,
                 cnn.input_y: y,
                 cnn.dropout_keep_prob: 1.0,
                 cnn.is_training: False,
@@ -72,30 +74,36 @@ def test(pos_file, neg_file, ckpt_path, pos_data, neg_data, out, sequence_length
 
     print("Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
 
-    index = []
-    for i in range(len(pre)):
-        if pre[i] != label[i]:
-            if i < 4158:
-                index.append([i, 4158+i])
-            else:
-                index.append([4158-i, i])
+    # index = []
+    # for i in range(len(pre)):
+    #     if pre[i] != label[i]:
+    #         if i < 4158:
+    #             index.append([i, 4158+i])
+    #         else:
+    #             index.append([4158-i, i])
+    #
+    # ff = codecs.open(pos_data, 'r')
+    # a1 = ff.readlines()
+    # ff.close()
+    # ff = codecs.open(neg_data, 'r')
+    # a2 = ff.readlines()
+    # ff.close()
+    # a1 = a1 + a2
+    # del a2
+    # assert len(a1) == len(pre)
+    # with codecs.open(out, 'w') as ff:
+    #     for ind in index:
+    #         ind1, ind2 = ind
+    #         posline, negline = a1[ind1], a1[ind2]
+    #         ff.write(posline.strip() + "#" * 10 + negline.strip() + "\n")
+    #
 
-    ff = codecs.open(pos_data, 'r')
-    a1 = ff.readlines()
-    ff.close()
-    ff = codecs.open(neg_data, 'r')
-    a2 = ff.readlines()
-    ff.close()
-    a1 = a1 + a2
-    del a2
-    assert len(a1) == len(pre)
-    with codecs.open(out, 'w') as ff:
-        for ind in index:
-            ind1, ind2 = ind
-            posline, negline = a1[ind1], a1[ind2]
-            ff.write(posline.strip() + "#" * 10 + negline.strip() + "\n")
-
-
+    print("Probability Shape:", probability.shape)
+    with codecs.open(out, 'w') as f:
+        for prob in probability:
+            pos, neg = prob
+            pos, neg = str(pos), str(neg)
+            f.write(pos + '##' + neg + "\n")
 
 
 
@@ -105,11 +113,11 @@ if __name__ == "__main__":
     neg_file = args[2]
     tags_vocab_size = args[3]
     ckpt_path = args[4]
-    posdata = args[5]
-    negdata = args[6]
-    out = args[7]
-    filter_sizes = args[8]
-    num_filters = args[9]
 
-    test(pos_file, neg_file, ckpt_path, pos_data=posdata, neg_data=negdata, out=out, tags_vocab_size=tags_vocab_size, filter_sizes=filter_sizes, num_filters=num_filters)
+    out = args[5]
+    filter_sizes = args[6]
+    filter_sizes2 = args[7]
+    num_filters = args[8]
+
+    test(pos_file, neg_file, ckpt_path, out=out, tags_vocab_size=tags_vocab_size, filter_sizes=filter_sizes, filter_sizes2=filter_sizes2, num_filters=num_filters)
 
