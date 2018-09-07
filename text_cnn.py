@@ -7,7 +7,7 @@ class TextCNN(object):
     """
     def __init__(
       self, sequence_length, num_classes, vocab_size, tags_vocab_size, name_vocab_size,
-      embedding_size, filter_sizes, filter_sizes2, num_filters, l2_reg_lambda=0.0):
+      embedding_size, filter_sizes, filter_sizes2, filter_sizes3, num_filters, l2_reg_lambda=0.0):
 
         # Placeholders for input, output and dropout
         self.input_x = tf.placeholder(tf.int32, [None, sequence_length], name="input_x")
@@ -77,25 +77,41 @@ class TextCNN(object):
         #########   2nd Layer  ##########
         #################################
 
+        conv2_outs = []
+        for i, filter_size in enumerate(filter_sizes2):
+            with tf.variable_scope("second_conv_%s" % filter_size):
+                filter_shape = [filter_size, num_filters * len(filter_sizes), num_filters]
+                W = tf.get_variable("second_conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
+                conv2 = tf.nn.conv1d(conv2_inputs, W, stride=1, padding="SAME", name="second_conv")
+                conv2 = tf.layers.batch_normalization(conv2, axis=-1, training=self.is_training)
+                h = tf.nn.relu(conv2, name="relu_2")
+                conv2_outs.append(h)
+        conv3_inputs = tf.concat(conv2_outs, -1)
+        print("conv3_inputs Shape:", conv3_inputs.shape)
+
+        #################################
+        #########   3rd Layer  ##########
+        #################################
+
         # Create a convolution + maxpool layer for each filter size
         pooled_outputs = []
-        for i, filter_size in enumerate(filter_sizes2):
-            with tf.variable_scope("second_conv_maxpool_%s" % filter_size):
+        for i, filter_size in enumerate(filter_sizes3):
+            with tf.variable_scope("third_conv_maxpool_%s" % filter_size):
                 # Convolution Layer
-                filter_shape = [filter_size, num_filters * len(filter_sizes), num_filters]
+                filter_shape = [filter_size, num_filters * len(filter_sizes2), num_filters]
                 #W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
-                W = tf.get_variable("second_conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
+                W = tf.get_variable("third_conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
                 # b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="conv_b_{}".format(filter_size))
                 conv = tf.nn.conv1d(
-                    conv2_inputs,
+                    conv3_inputs,
                     W,
                     stride=1,
                     padding="VALID",
-                    name="second_conv")
+                    name="third_conv")
                 # Apply BN
                 conv = tf.layers.batch_normalization(conv, axis=-1, training=self.is_training) #axis定的是channel在的维度。
                 # Apply nonlinearity
-                h = tf.nn.relu(conv, name="relu_2")
+                h = tf.nn.relu(conv, name="relu_3")
                 # Maxpooling over the outputs
                 # pooled = tf.nn.max_pool(
                 #     h,
@@ -111,8 +127,10 @@ class TextCNN(object):
         # Combine all the pooled features
         print("Conv Shape:", conv.shape)
         print("pooled Shape:", pooled.shape)
-        num_filters_total = num_filters * len(filter_sizes2)
+
+        num_filters_total = num_filters * len(filter_sizes3)
         self.h_pool = tf.concat(pooled_outputs, 2)
+        print("h_pool Shape:", self.h_pool.shape)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
 
         # Add dropout
