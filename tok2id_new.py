@@ -26,8 +26,8 @@ def tok2id(data, vocab_words, vocab_tags, vocab_names, out_data):
                 name = "0"
             names2ids[name] = id
 
-    with codecs.open(data, 'r') as f3:
-        with codecs.open(out_data, 'w') as f4:
+    with codecs.open(data, 'r', encoding="utf-8") as f3:
+        with codecs.open(out_data, 'w', encoding="utf-8") as f4:
             for line in f3.readlines():
                 line = line.strip()
 
