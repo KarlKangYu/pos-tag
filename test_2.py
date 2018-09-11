@@ -111,13 +111,12 @@ if __name__ == "__main__":
     args = sys.argv
     pos_file = args[1]
     neg_file = args[2]
-    tags_vocab_size = args[3]
-    ckpt_path = args[4]
+    ckpt_path = args[3]
 
-    out = args[5]
-    filter_sizes = args[6]
-    filter_sizes2 = args[7]
-    num_filters = args[8]
+    out = args[4]
+    filter_sizes = args[5]
+    filter_sizes2 = args[6]
+    num_filters = args[7]
 
-    test(pos_file, neg_file, ckpt_path, out=out, tags_vocab_size=tags_vocab_size, filter_sizes=filter_sizes, filter_sizes2=filter_sizes2, num_filters=num_filters)
+    test(pos_file, neg_file, ckpt_path, out=out, filter_sizes=filter_sizes, filter_sizes2=filter_sizes2, num_filters=num_filters)
 

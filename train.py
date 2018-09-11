@@ -6,7 +6,7 @@ import os
 import time
 import datetime
 import data_loader_2 as data_loader
-from text_cnn import TextCNN
+from text_cnn_2layers import TextCNN
 
 # Parameters
 # ==================================================
@@ -15,32 +15,29 @@ from text_cnn import TextCNN
 tf.flags.DEFINE_float("dev_sample_percentage", 0.0001, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos", "Data source for the positive data.")
 tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg", "Data source for the negative data.")
-tf.flags.DEFINE_string("soft_target_data_file", "./data/rt-polaritydata/rt-polarity.neg", "soft_target")
+# tf.flags.DEFINE_string("soft_target_data_file", "./data/rt-polaritydata/rt-polarity.neg", "soft_target")
 tf.flags.DEFINE_integer("max_sentence_length", 30, "Max sentence length in train/test data (Default: 50)")
 #tf.flags.DEFINE_integer("min_frequency", 10, "Min word frequency to be contained in vocab list")
 tf.flags.DEFINE_integer('words_vocab_size', 50000,                             'words vocab size')
 tf.flags.DEFINE_integer('tags_vocab_size', 51,                             'pos-tags vocab size')
-#tag2:51
-#detailed: 12363
-#pos:17
 tf.flags.DEFINE_integer('names_vocab_size', 20,                             'name-entities vocab size')
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_dim", 300, "Dimensionality of character embedding (default: 128)")
-tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
-tf.flags.DEFINE_string("filter_sizes2", "3,4,5,6", "Comma-separated filter sizes (default: '3,4,5,6')")
+tf.flags.DEFINE_string("filter_sizes", "3,5,7", "Comma-separated filter sizes (default: '3,4,5')")
+tf.flags.DEFINE_string("filter_sizes2", "3,5,7,9,11,13", "Comma-separated filter sizes (default: '3,4,5,6')")
 tf.flags.DEFINE_string("filter_sizes3", "4,5,6,7,8", "Comma-separated filter sizes (default: '4,5,6,7,8')")
-tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
+tf.flags.DEFINE_integer("num_filters", 256, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
 tf.flags.DEFINE_float("lr", 0.001, "L2 regularization lambda (default: 0.0)")
 
 # Training parameters
-tf.flags.DEFINE_integer("batch_size", 256, "Batch Size (default: 64)")
+tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_integer("num_epochs", 200, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 10000, "Evaluate model on dev set after this many steps (default: 100)")
-tf.flags.DEFINE_integer("checkpoint_every", 10000, "Save model after this many steps (default: 100)")
-tf.flags.DEFINE_integer("num_checkpoints", 2, "Number of checkpoints to store (default: 2)")
+tf.flags.DEFINE_integer("checkpoint_every", 50000, "Save model after this many steps (default: 100)")
+tf.flags.DEFINE_integer("num_checkpoints", 2000, "Number of checkpoints to store (default: 2)")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -120,7 +117,7 @@ def train(x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev,
                 embedding_size=FLAGS.embedding_dim,
                 filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
                 filter_sizes2=list(map(int, FLAGS.filter_sizes2.split(","))),
-                filter_sizes3=list(map(int, FLAGS.filter_sizes3.split(","))),
+                # filter_sizes3=list(map(int, FLAGS.filter_sizes3.split(","))),
                 num_filters=FLAGS.num_filters,
                 l2_reg_lambda=FLAGS.l2_reg_lambda)
 

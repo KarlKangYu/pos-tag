@@ -30,16 +30,19 @@ class TextCNN(object):
         with tf.device('/cpu:0'), tf.name_scope("embedding_words"):
             self.W = tf.get_variable("embed_W_words", [vocab_size, embedding_size], initializer=initializer)
             self.embedded_chars = tf.nn.embedding_lookup(self.W, self.input_x)
+            self.embedded_chars = tf.nn.dropout(self.embedded_chars, self.dropout_keep_prob)
             #self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
 
         with tf.device('/cpu:0'), tf.name_scope("embedding_tags"):
             W_tags = tf.get_variable("embed_W_tags", [tags_vocab_size, embedding_size], initializer=initializer)
             embedded_tags = tf.nn.embedding_lookup(W_tags, self.input_tags)
+            embedded_tags = tf.nn.dropout(embedded_tags, self.dropout_keep_prob)
             #embedded_tags_expanded = tf.expand_dims(embedded_tags, -1)
 
         with tf.device('/cpu:0'), tf.name_scope("embedding_name_entities"):
             W_name = tf.get_variable("embed_W_name", [name_vocab_size, embedding_size], initializer=initializer)
             embedded_name = tf.nn.embedding_lookup(W_name, self.input_name_entity)
+            embedded_name = tf.nn.dropout(embedded_name, self.dropout_keep_prob)
             #embedded_name_expanded = tf.expand_dims(embedded_name, -1)
 
         # with tf.device('/cpu:0'), tf.name_scope("embedding_deps"):
@@ -70,6 +73,7 @@ class TextCNN(object):
                 conv1_outs.append(h)
 
         conv2_inputs = tf.concat(conv1_outs, -1)
+        conv2_inputs = tf.nn.dropout(conv2_inputs, self.dropout_keep_prob)
         # conv2_inputs = tf.expand_dims(conv2_inputs, -1)
         print("conv2_inputs Shape:", conv2_inputs.shape)
 
@@ -117,7 +121,7 @@ class TextCNN(object):
 
         # Add dropout
         with tf.name_scope("dropout"):
-            self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
+            self.h_drop = tf.nn.dropout(self.h_pool_flat, (self.dropout_keep_prob - 0.1))
 
         # Final (unnormalized) scores and predictions
         with tf.name_scope("output"):
