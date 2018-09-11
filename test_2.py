@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import data_loader_2 as data_loader
-from text_cnn import TextCNN
+from text_cnn_2layers import TextCNN
 import sys
 import codecs
 
