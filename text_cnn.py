@@ -63,6 +63,7 @@ class TextCNN(object):
             with tf.variable_scope("first_conv_%s" % filter_size):
                 filter_shape = [filter_size, embedding_size * 3, num_filters]
                 W = tf.get_variable("first_conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
+                l2_loss += tf.nn.l2_loss(W)
                 conv1 = tf.nn.conv1d(cnn_inputs, W, stride=1, padding="SAME", name="first_conv")
                 conv1 = tf.layers.batch_normalization(conv1, axis=-1, training=self.is_training) #axis定的是channel在的维度。
                 h = tf.nn.relu(conv1, name="relu_1")
@@ -82,6 +83,7 @@ class TextCNN(object):
             with tf.variable_scope("second_conv_%s" % filter_size):
                 filter_shape = [filter_size, num_filters * len(filter_sizes), num_filters]
                 W = tf.get_variable("second_conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
+                l2_loss += tf.nn.l2_loss(W)
                 conv2 = tf.nn.conv1d(conv2_inputs, W, stride=1, padding="SAME", name="second_conv")
                 conv2 = tf.layers.batch_normalization(conv2, axis=-1, training=self.is_training)
                 h = tf.nn.relu(conv2, name="relu_2")
@@ -101,6 +103,7 @@ class TextCNN(object):
                 filter_shape = [filter_size, num_filters * len(filter_sizes2), num_filters]
                 #W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
                 W = tf.get_variable("third_conv_{}_W".format(filter_size), shape=filter_shape, initializer=initializer)
+                l2_loss += tf.nn.l2_loss(W)
                 # b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="conv_b_{}".format(filter_size))
                 conv = tf.nn.conv1d(
                     conv3_inputs,
