@@ -17,7 +17,8 @@ class TextCNN(object):
         #self.input_head = tf.placeholder(tf.int32, [None, sequence_length], name="input_head")
         self.input_y = tf.placeholder(tf.float32, [None, num_classes], name="input_y")
         #self.soft_target = tf.placeholder(tf.float32, [None, num_classes], name="soft_target")
-        self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.dropout_keep_prob_1 = tf.placeholder(tf.float32, name="dropout_keep_prob_1")
+        self.dropout_keep_prob_2 = tf.placeholder(tf.float32, name="dropout_keep_prob_2")
         self.tempreture = tf.placeholder(tf.float32, name="Tempreture")
         self.is_training = tf.placeholder(tf.bool, name="is_training")
 
@@ -30,19 +31,19 @@ class TextCNN(object):
         with tf.device('/cpu:0'), tf.name_scope("embedding_words"):
             self.W = tf.get_variable("embed_W_words", [vocab_size, embedding_size], initializer=initializer)
             self.embedded_chars = tf.nn.embedding_lookup(self.W, self.input_x)
-            self.embedded_chars = tf.nn.dropout(self.embedded_chars, self.dropout_keep_prob)
+            self.embedded_chars = tf.nn.dropout(self.embedded_chars, self.dropout_keep_prob_1)
             #self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
 
         with tf.device('/cpu:0'), tf.name_scope("embedding_tags"):
             W_tags = tf.get_variable("embed_W_tags", [tags_vocab_size, embedding_size], initializer=initializer)
             embedded_tags = tf.nn.embedding_lookup(W_tags, self.input_tags)
-            embedded_tags = tf.nn.dropout(embedded_tags, self.dropout_keep_prob)
+            embedded_tags = tf.nn.dropout(embedded_tags, self.dropout_keep_prob_1)
             #embedded_tags_expanded = tf.expand_dims(embedded_tags, -1)
 
         with tf.device('/cpu:0'), tf.name_scope("embedding_name_entities"):
             W_name = tf.get_variable("embed_W_name", [name_vocab_size, embedding_size], initializer=initializer)
             embedded_name = tf.nn.embedding_lookup(W_name, self.input_name_entity)
-            embedded_name = tf.nn.dropout(embedded_name, self.dropout_keep_prob)
+            embedded_name = tf.nn.dropout(embedded_name, self.dropout_keep_prob_1)
             #embedded_name_expanded = tf.expand_dims(embedded_name, -1)
 
         # with tf.device('/cpu:0'), tf.name_scope("embedding_deps"):
@@ -73,7 +74,7 @@ class TextCNN(object):
                 conv1_outs.append(h)
 
         conv2_inputs = tf.concat(conv1_outs, -1)
-        conv2_inputs = tf.nn.dropout(conv2_inputs, self.dropout_keep_prob)
+        # conv2_inputs = tf.nn.dropout(conv2_inputs, self.dropout_keep_prob)
         # conv2_inputs = tf.expand_dims(conv2_inputs, -1)
         print("conv2_inputs Shape:", conv2_inputs.shape)
 
@@ -121,7 +122,7 @@ class TextCNN(object):
 
         # Add dropout
         with tf.name_scope("dropout"):
-            self.h_drop = tf.nn.dropout(self.h_pool_flat, (self.dropout_keep_prob - 0.1))
+            self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob_2)
 
         # Final (unnormalized) scores and predictions
         with tf.name_scope("output"):

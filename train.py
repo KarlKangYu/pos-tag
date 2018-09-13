@@ -28,7 +28,8 @@ tf.flags.DEFINE_string("filter_sizes", "3,5,7", "Comma-separated filter sizes (d
 tf.flags.DEFINE_string("filter_sizes2", "3,5,7,9,11,13", "Comma-separated filter sizes (default: '3,4,5,6')")
 tf.flags.DEFINE_string("filter_sizes3", "4,5,6,7,8", "Comma-separated filter sizes (default: '4,5,6,7,8')")
 tf.flags.DEFINE_integer("num_filters", 256, "Number of filters per filter size (default: 128)")
-tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
+tf.flags.DEFINE_float("dropout_keep_prob_1", 0.8, "Dropout keep probability (default: 0.5)")
+tf.flags.DEFINE_float("dropout_keep_prob_2", 0.4, "Dropout keep probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
 tf.flags.DEFINE_float("lr", 0.001, "L2 regularization lambda (default: 0.0)")
 
@@ -195,7 +196,8 @@ def train(x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev,
                   # cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
                   # cnn.soft_target: soft_batch,
-                  cnn.dropout_keep_prob: FLAGS.dropout_keep_prob,
+                  cnn.dropout_keep_prob_1: FLAGS.dropout_keep_prob_1,
+                  cnn.dropout_keep_prob_2: FLAGS.dropout_keep_prob_2,
                   cnn.is_training: True,
                   cnn.tempreture: 1
                 }
@@ -218,7 +220,8 @@ def train(x_train, tags_train, names_train, y_train, x_dev, tags_dev, names_dev,
                   # cnn.input_head: head_batch,
                   cnn.input_y: y_batch,
                   # cnn.soft_target: soft_batch,
-                  cnn.dropout_keep_prob: 1.0,
+                  cnn.dropout_keep_prob_1: 1.0,
+                  cnn.dropout_keep_prob_2: 1.0,
                   cnn.is_training: False,
                   cnn.tempreture: 1
                 }
