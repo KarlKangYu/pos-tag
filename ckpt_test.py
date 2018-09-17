@@ -45,9 +45,8 @@ def ckpt_test(pos_file, neg_file, ckpt_path, step, out, sequence_length=30, word
             sess.run(tf.global_variables_initializer())
 
             FLAG = True
-
+            i = int(step)
             while FLAG:
-                i = step
                 path = os.path.join(ckpt_path, "model-" + str(i))
 
                 try:
@@ -79,6 +78,7 @@ def ckpt_test(pos_file, neg_file, ckpt_path, step, out, sequence_length=30, word
 
                     print("Model:", path, "\n", "Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
                     f.write("Model:" + path + "\n" + "Accuracy:" + str(accuracy) + " Recall:" + str(recall) + " Precision:" + str(precision) + "\n")
+                    i += step
                 except:
                     print("Not found ckpt:", path)
                     FLAG = False
