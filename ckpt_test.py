@@ -6,7 +6,7 @@ import sys
 import codecs
 import os
 
-def ckpt_test(pos_file, neg_file, ckpt_path, step, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51,
+def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51,
          name_vocab_size=20, embedding_dim=300, filter_sizes="3,5,7", filter_sizes2="3,5,7,9,11,13", num_filters=256,
               tempreture=1):
     # Data Preparation
@@ -45,7 +45,8 @@ def ckpt_test(pos_file, neg_file, ckpt_path, step, out, sequence_length=30, word
             sess.run(tf.global_variables_initializer())
 
             FLAG = True
-            i = int(step)
+            i = int(start)
+            step = int(step)
             while FLAG:
                 path = os.path.join(ckpt_path, "model-" + str(i))
 
@@ -86,7 +87,6 @@ def ckpt_test(pos_file, neg_file, ckpt_path, step, out, sequence_length=30, word
 
 if __name__ == "__main__":
     args = sys.argv
-    pos_file, neg_file, ckpt_path, step, out = args[1], args[2], args[3], args[4], args[5]
-    ckpt_test(pos_file, neg_file, ckpt_path, step, out)
-
+    pos_file, neg_file, ckpt_path, start, step, out = args[1], args[2], args[3], args[4], args[5], args[6]
+    ckpt_test(pos_file, neg_file, ckpt_path, start, step, out)
 
