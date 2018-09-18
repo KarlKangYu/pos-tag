@@ -7,7 +7,7 @@ import codecs
 
 
 def test(pos_file, neg_file, ckpt_path, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51,
-         name_vocab_size=20, embedding_dim=300, filter_sizes="3,4,5", filter_sizes2="4,5,6,7,8,10,13", num_filters=256, tempreture=1):
+         name_vocab_size=20, embedding_dim=300, filter_sizes="3,5,7", filter_sizes2="3,5,7,9,11,13", num_filters=256, tempreture=1):
     # Data Preparation
     # ==================================================
 
@@ -24,7 +24,7 @@ def test(pos_file, neg_file, ckpt_path, out, sequence_length=30, words_vocab_siz
 
     #probabilities = list()
 
-    num_filters = int(num_filters)
+    # num_filters = int(num_filters)
 
 
     with tf.Graph().as_default():
@@ -54,7 +54,8 @@ def test(pos_file, neg_file, ckpt_path, out, sequence_length=30, words_vocab_siz
                 cnn.input_tags: tags,
                 cnn.input_name_entity: names,
                 cnn.input_y: y,
-                cnn.dropout_keep_prob: 1.0,
+                cnn.dropout_keep_prob_1: 1.0,
+                cnn.dropout_keep_prob_2: 1.0,
                 cnn.is_training: False,
                 cnn.tempreture: tempreture
             }
@@ -114,9 +115,6 @@ if __name__ == "__main__":
     ckpt_path = args[3]
 
     out = args[4]
-    filter_sizes = args[5]
-    filter_sizes2 = args[6]
-    num_filters = args[7]
 
-    test(pos_file, neg_file, ckpt_path, out=out, filter_sizes=filter_sizes, filter_sizes2=filter_sizes2, num_filters=num_filters)
+    test(pos_file, neg_file, ckpt_path, out=out)
 
