@@ -55,7 +55,7 @@ def do_inference(hostport):
     request.inputs['input_tempreture'].CopyFrom(
         tf.contrib.util.make_tensor_proto(1.0, shape=[]))
     request.inputs['input_training'].CopyFrom(
-        tf.contrib.util.make_tensor_proto(False, shape=[]))
+        tf.contrib.util.make_tensor_proto(False))
     ##########################
 
     #
