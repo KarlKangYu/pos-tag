@@ -31,10 +31,13 @@ def do_inference(hostport):
     tags = "11 14 7 8 2 4 3 6 16 7 11 22 13 10"
     name_entity = "2 2 2 2 2 2 2 2 2 2 2 2 2 2"
     words = words.strip().split()
+    words = [int(i) for i in words]
     words = words + [0] * (num_steps - len(words))
     tags = tags.strip().split()
+    tags = [int(i) for i in tags]
     tags = tags + [0] * (num_steps - len(tags))
     name_entity = name_entity.strip().split()
+    name_entity = [int(i) for i in name_entity]
     name_entity = [0] * (num_steps - len(name_entity))
     
     request.inputs['input_data_words'].CopyFrom(
