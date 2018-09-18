@@ -36,14 +36,14 @@ def do_inference(hostport):
     tags = tags + [0] * (num_steps - len(tags))
     name_entity = name_entity.strip().split()
     name_entity = [0] * (num_steps - len(name_entity))
-
+    
     request.inputs['input_data_words'].CopyFrom(
         tf.contrib.util.make_tensor_proto([words], shape=[1, num_steps]))
     request.inputs['input_data_tags'].CopyFrom(
         tf.contrib.util.make_tensor_proto([tags], shape=[1, num_steps]))
     request.inputs['input_data_name_entity'].CopyFrom(
         tf.contrib.util.make_tensor_proto([name_entity], shape=[1, num_steps]))
-    
+
     #
     # # Randomly generate some test data
     # temp_data = numpy.random.randn(10, 3).astype(numpy.float32)
