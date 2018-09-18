@@ -1,27 +1,27 @@
 import numpy as np
-from sklearn.metrics import roc_auc_score, roc_curve
+# from sklearn.metrics import roc_auc_score, roc_curve
 import codecs
 import data_loader_2 as data_loader
 import sys
 
 
-def auc(pos_file, neg_file, test_prob_path, sequence_length=30):
-    x, tags, deps, heads, y = data_loader.read_data(pos_file, neg_file, sequence_length)
-    y_true = np.argmax(y, axis=1)  #pos: 0, neg: 1
-    score = list()
-    with codecs.open(test_prob_path, 'r') as f:
-        for line in f.readlines():
-            line = line.strip()
-            _, neg = line.split(",")
-            neg = float(neg)
-            score.append(neg)
-
-    y_score = np.array(score)
-
-    assert len(y_score) == len(y_true)
-    print("Shape:", y_score.shape)
-    auc = roc_auc_score(y_true, y_score)
-    print("AUC:", auc)
+# def auc(pos_file, neg_file, test_prob_path, sequence_length=30):
+#     x, tags, deps, heads, y = data_loader.read_data(pos_file, neg_file, sequence_length)
+#     y_true = np.argmax(y, axis=1)  #pos: 0, neg: 1
+#     score = list()
+#     with codecs.open(test_prob_path, 'r') as f:
+#         for line in f.readlines():
+#             line = line.strip()
+#             _, neg = line.split(",")
+#             neg = float(neg)
+#             score.append(neg)
+#
+#     y_score = np.array(score)
+#
+#     assert len(y_score) == len(y_true)
+#     print("Shape:", y_score.shape)
+#     auc = roc_auc_score(y_true, y_score)
+#     print("AUC:", auc)
 
 
 def test_recall(pos_file, neg_file, test_prob_path, threshold, sequence_length=30):
