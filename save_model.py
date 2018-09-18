@@ -36,6 +36,13 @@ def export():
             input_tags = graph.get_operation_by_name("input_tags").outputs[0]
             input_name_entity = graph.get_operation_by_name("input_name_entities").outputs[0]
 
+            #########################
+            input_dropout_keep_1 = graph.get_operation_by_name("dropout_keep_prob_1").outputs[0]
+            input_dropout_keep_2 = graph.get_operation_by_name("dropout_keep_prob_2").outputs[0]
+            input_tempreture = graph.get_operation_by_name("Tempreture").outputs[0]
+            input_training = graph.get_operation_by_name("is_training").outputs[0]
+            ##########################
+
             # Tensors we want to evaluate
             scores = graph.get_operation_by_name("output/scores").outputs[0]
             prediction = graph.get_operation_by_name("output/predictions").outputs[0]
@@ -51,6 +58,13 @@ def export():
             tensor_input_data_tags = tf.saved_model.utils.build_tensor_info(input_tags)
             tensor_input_data_name_entity = tf.saved_model.utils.build_tensor_info(input_name_entity)
 
+            ###########################
+            tensor_input_dropout_keep_1 = tf.saved_model.utils.build_tensor_info(input_dropout_keep_1)
+            tensor_input_dropout_keep_2 = tf.saved_model.utils.build_tensor_info(input_dropout_keep_2)
+            tensor_input_tempreture = tf.saved_model.utils.build_tensor_info(input_tempreture)
+            tensor_input_training = tf.saved_model.utils.build_tensor_info(input_training)
+            ###########################
+
             tensor_output_scores = tf.saved_model.utils.build_tensor_info(scores)
             tensor_output_prediction = tf.saved_model.utils.build_tensor_info(prediction)
 
@@ -58,7 +72,11 @@ def export():
                 tf.saved_model.signature_def_utils.build_signature_def(
                     inputs={'input_data_words': tensor_input_data_words,
                             "input_data_tags": tensor_input_data_tags,
-                            "input_data_name_entity": tensor_input_data_name_entity},
+                            "input_data_name_entity": tensor_input_data_name_entity,
+                            "input_dropout_keep_1": tensor_input_dropout_keep_1,
+                            "input_dropout_keep_2": tensor_input_dropout_keep_2,
+                            "input_tempreture": tensor_input_tempreture,
+                            "input_training": tensor_input_training},
                     outputs={'output_scores': tensor_output_scores,
                              'output_prediction': tensor_output_prediction},
                     method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))
