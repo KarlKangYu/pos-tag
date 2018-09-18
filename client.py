@@ -47,6 +47,17 @@ def do_inference(hostport):
     request.inputs['input_data_name_entity'].CopyFrom(
         tf.contrib.util.make_tensor_proto([name_entity], shape=[1, num_steps]))
 
+    ##########################
+    request.inputs['input_dropout_keep_1'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(1.0, shape=[]))
+    request.inputs['input_dropout_keep_2'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(1.0, shape=[]))
+    request.inputs['input_tempreture'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(1.0, shape=[]))
+    request.inputs['input_training'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(False, shape=[]))
+    ##########################
+
     #
     # # Randomly generate some test data
     # temp_data = numpy.random.randn(10, 3).astype(numpy.float32)
