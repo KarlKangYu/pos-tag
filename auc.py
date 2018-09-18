@@ -24,8 +24,13 @@ import sys
 #     print("AUC:", auc)
 
 
-def test_recall(pos_file, neg_file, test_prob_path, threshold, sequence_length=30):
+def test_recall(pos_file, neg_file, test_prob_path, pos_sentence_file, out_file, threshold, sequence_length=30):
     threshold = float(threshold)
+
+    f_pos = codecs.open(pos_sentence_file, 'r', encoding="utf-8")
+    pos_sentences = f_pos.readlines()
+    f_pos.close()
+
     x, tags, names, y = data_loader.read_data(pos_file, neg_file, sequence_length)
     y_true = np.argmax(y, axis=1) #pos=0, neg=1
     num_data = len(y_true)
@@ -55,10 +60,15 @@ def test_recall(pos_file, neg_file, test_prob_path, threshold, sequence_length=3
     recall = count / np.sum(y_true==1)
     precision = count / np.sum(y_pre==1)
 
+    f_out = codecs.open(out_file, 'w', encoding="utf-8")
+
     tp = 0
     for i in range(len(y_pre)):
         if y_pre[i] == 0 and y_pre[i] == y_true[i]:
             tp += 1
+            f_out.write(pos_sentences[i])
+
+    f_out.close()
 
     tn = count
     fp = num_neg - tn
@@ -73,8 +83,10 @@ if __name__ == "__main__":
     pos_file = args[1]
     neg_file = args[2]
     test_prob_path = args[3]
-    threshold = args[4]
-    test_recall(pos_file, neg_file, test_prob_path, threshold)
+    pos_sentence_file = args[4]
+    out_file = args[5]
+    threshold = args[6]
+    test_recall(pos_file, neg_file, test_prob_path, pos_sentence_file, out_file, threshold)
 
 
 
