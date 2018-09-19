@@ -38,7 +38,7 @@ def do_inference(hostport):
     tags = tags + [0] * (num_steps - len(tags))
     name_entity = name_entity.strip().split()
     name_entity = [int(i) for i in name_entity]
-    name_entity = [0] * (num_steps - len(name_entity))
+    name_entity = name_entity + [0] * (num_steps - len(name_entity))
     
     request.inputs['input_data_words'].CopyFrom(
         tf.contrib.util.make_tensor_proto([words], shape=[1, num_steps]))
@@ -55,7 +55,7 @@ def do_inference(hostport):
     request.inputs['input_tempreture'].CopyFrom(
         tf.contrib.util.make_tensor_proto(1.0, shape=[]))
     request.inputs['input_training'].CopyFrom(
-        tf.contrib.util.make_tensor_proto(False))
+        tf.contrib.util.make_tensor_proto(False, shape=[]))
     ##########################
 
     #
