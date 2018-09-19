@@ -78,7 +78,7 @@ def do_inference(hostport):
 
     # predict
     time_start = time.time()
-    for i in range(100):
+    for i in range(10000):
         result = stub.Predict(request, 5.0)  # 5 seconds
     time_end = time.time()
     t = time_end - time_start
