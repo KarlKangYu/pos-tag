@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2
+import time
 
 tf.app.flags.DEFINE_string('server', 'localhost:8500', 'PredictionService host:port')
 FLAGS = tf.app.flags.FLAGS
@@ -45,9 +46,9 @@ def do_inference(hostport):
     # print(tags.shape)
     # name_entity = np.array([name_entity])
 
-    words = [[0] * 30]
-    tags = [[0] * 30]
-    name_entity = [[0] * 30]
+    words = [[3] * 30]
+    tags = [[3] * 30]
+    name_entity = [[2] * 30]
 
 
     request.inputs['input_data_words'].CopyFrom(
@@ -76,8 +77,12 @@ def do_inference(hostport):
     #     tf.contrib.util.make_tensor_proto(data, shape=data.shape))
 
     # predict
-    result = stub.Predict(request, 5.0)  # 5 seconds
-    return result
+    time_start = time.time()
+    for i in range(100):
+        result = stub.Predict(request, 5.0)  # 5 seconds
+    time_end = time.time()
+    t = time_end - time_start
+    return t
 
 
 def main(_):
@@ -86,7 +91,7 @@ def main(_):
         return
 
     result = do_inference(FLAGS.server)
-    print('Result is: ', result)
+    print('100 times cost : ', result)
 
 
 if __name__ == '__main__':
