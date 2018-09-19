@@ -27,22 +27,28 @@ def do_inference(hostport):
 
     # Randomly generate some test data
     num_steps = 30
-    words = "1 27 10 272 5 54 48 219 11 360 53 17 628 1846 3"
-    tags = "11 14 7 8 2 4 3 6 16 7 11 22 13 10"
-    name_entity = "2 2 2 2 2 2 2 2 2 2 2 2 2 2"
-    words = words.strip().split()
-    words = [int(i) for i in words]
-    words = words + [0] * (num_steps - len(words))
-    tags = tags.strip().split()
-    tags = [int(i) for i in tags]
-    tags = tags + [0] * (num_steps - len(tags))
-    name_entity = name_entity.strip().split()
-    name_entity = [int(i) for i in name_entity]
-    name_entity = name_entity + [0] * (num_steps - len(name_entity))
+    # words = "1 27 10 272 5 54 48 219 11 360 53 17 628 1846 3"
+    # tags = "11 14 7 8 2 4 3 6 16 7 11 22 13 10"
+    # name_entity = "2 2 2 2 2 2 2 2 2 2 2 2 2 2"
+    # words = words.strip().split()
+    # words = [int(i) for i in words]
+    # words = words + [0] * (num_steps - len(words))
+    # tags = tags.strip().split()
+    # tags = [int(i) for i in tags]
+    # tags = tags + [0] * (num_steps - len(tags))
+    # name_entity = name_entity.strip().split()
+    # name_entity = [int(i) for i in name_entity]
+    # name_entity = name_entity + [0] * (num_steps - len(name_entity))
+    #
+    # words = np.array([words])
+    # tags = np.array([tags])
+    # print(tags.shape)
+    # name_entity = np.array([name_entity])
+    words = [[0] * 30]
+    tags = [[0] * 30]
+    name_entity = [[0] * 30]
 
-    words = np.array([words])
-    tags = np.array([tags])
-    name_entity = np.array([name_entity])
+
     request.inputs['input_data_words'].CopyFrom(
         tf.contrib.util.make_tensor_proto(words, shape=[1, num_steps]))
     request.inputs['input_data_tags'].CopyFrom(
