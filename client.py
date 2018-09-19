@@ -1,5 +1,5 @@
 from grpc.beta import implementations
-import numpy
+import numpy as np
 import tensorflow as tf
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2
@@ -39,13 +39,16 @@ def do_inference(hostport):
     name_entity = name_entity.strip().split()
     name_entity = [int(i) for i in name_entity]
     name_entity = name_entity + [0] * (num_steps - len(name_entity))
-    
+
+    words = np.array([words])
+    tags = np.array([tags])
+    name_entity = np.array([name_entity])
     request.inputs['input_data_words'].CopyFrom(
-        tf.contrib.util.make_tensor_proto([words], shape=[1, num_steps]))
+        tf.contrib.util.make_tensor_proto(words, shape=[1, num_steps]))
     request.inputs['input_data_tags'].CopyFrom(
-        tf.contrib.util.make_tensor_proto([tags], shape=[1, num_steps]))
+        tf.contrib.util.make_tensor_proto(tags, shape=[1, num_steps]))
     request.inputs['input_data_name_entity'].CopyFrom(
-        tf.contrib.util.make_tensor_proto([name_entity], shape=[1, num_steps]))
+        tf.contrib.util.make_tensor_proto(name_entity, shape=[1, num_steps]))
     #
     # ##########################
     # request.inputs['input_dropout_keep_1'].CopyFrom(
