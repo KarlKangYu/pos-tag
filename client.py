@@ -91,7 +91,7 @@ def main(_):
         return
 
     result = do_inference(FLAGS.server)
-    print('100 times cost : ', result)
+    print('10000 times cost : ', result)
 
 
 if __name__ == '__main__':
