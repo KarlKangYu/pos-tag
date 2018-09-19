@@ -49,13 +49,13 @@ def do_inference(hostport):
     name_entity = [0] * 30
 
 
-    # request.inputs['input_data_words'].CopyFrom(
-    #     tf.contrib.util.make_tensor_proto(words, shape=[1, num_steps]))
-    # request.inputs['input_data_tags'].CopyFrom(
-    #     tf.contrib.util.make_tensor_proto(tags, shape=[1, num_steps]))
-    # request.inputs['input_data_name_entity'].CopyFrom(
-    #     tf.contrib.util.make_tensor_proto(name_entity, shape=[1, num_steps]))
-    #
+    request.inputs['input_data_words'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(words, shape=[num_steps]))
+    request.inputs['input_data_tags'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(tags, shape=[num_steps]))
+    request.inputs['input_data_name_entity'].CopyFrom(
+        tf.contrib.util.make_tensor_proto(name_entity, shape=[num_steps]))
+
     # ##########################
     # request.inputs['input_dropout_keep_1'].CopyFrom(
     #     tf.contrib.util.make_tensor_proto(1.0, shape=[]))
