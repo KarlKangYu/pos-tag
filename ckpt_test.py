@@ -83,7 +83,16 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
                     recall = count / neg_y
                     precision = count / number
 
+                    tp = 0
+                    for i in range(len(pre)):
+                        if pre[i] == 0 and pre[i] == label[i]:
+                            tp += 1
+
+                    tn = count
+                    fp = neg_y - tn
+                    fn = np.sum(label == 0) - tp
                     print("Model:", path, "\n", "Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
+                    print("TP:", tp, "FP:", fp, "\n", "FN:", fn, "TN:", tn)
                     f.write("Model:" + path + "\n" + "Accuracy:" + str(accuracy) + " Recall:" + str(recall) + " Precision:" + str(precision) + "\n")
                     id += step
                 except:
