@@ -70,7 +70,7 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
                     count = 0
                     pre = []
                     for prob in probability:
-                        if prob[0] > 0.88:
+                        if prob[0] > 0.89:
                             pre.append(0)
                         else:
                             pre.append(1)
