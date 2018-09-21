@@ -6,7 +6,7 @@ import sys
 import codecs
 import os
 
-def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51,
+def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, threshold, sequence_length=30, words_vocab_size=50000, tags_vocab_size=51,
          name_vocab_size=20, embedding_dim=300, filter_sizes="3,5,7", filter_sizes2="3,5,7,9,11,13", num_filters=256,
               tempreture=1):
     # Data Preparation
@@ -19,6 +19,7 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
     # data_size = len(y)
     # num_batches_per_epoch = (data_size // 256) + 1
 
+    threshold = float(threshold)
     label = np.argmax(y, axis=1)
     neg_y = np.sum(label == 1)
     print("Negative Data Numbers:", neg_y)
@@ -70,7 +71,7 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
                     count = 0
                     pre = []
                     for prob in probability:
-                        if prob[0] > 0.89:
+                        if prob[0] > threshold:
                             pre.append(0)
                         else:
                             pre.append(1)
@@ -93,6 +94,7 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
                     fn = np.sum(label == 0) - tp
                     print("Model:", path, "\n", "Accuracy:", accuracy, "Recall:", recall, "Precision:", precision)
                     print("TP:", tp, "FP:", fp, "\n", "FN:", fn, "TN:", tn)
+                    print("\n")
                     f.write("Model:" + path + "\n" + "Accuracy:" + str(accuracy) + " Recall:" + str(recall) + " Precision:" + str(precision) + "\n")
                     id += step
                 except:
@@ -102,6 +104,6 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
 
 if __name__ == "__main__":
     args = sys.argv
-    pos_file, neg_file, ckpt_path, start, step, out = args[1], args[2], args[3], args[4], args[5], args[6]
-    ckpt_test(pos_file, neg_file, ckpt_path, start, step, out)
+    pos_file, neg_file, ckpt_path, start, step, out, threshold = args[1], args[2], args[3], args[4], args[5], args[6], args[7]
+    ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, threshold)
 
