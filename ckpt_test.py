@@ -68,7 +68,13 @@ def ckpt_test(pos_file, neg_file, ckpt_path, start, step, out, sequence_length=3
                                                                  feed_dict=feed_dict)
 
                     count = 0
-                    pre = prediction
+                    pre = []
+                    for prob in probability:
+                        if prob[0] > 0.88:
+                            pre.append(0)
+                        else:
+                            pre.append(1)
+                    pre = np.array(pre)
                     number = np.sum(pre == 1)
                     for i in range(len(pre)):
                         if pre[i] == 1 and label[i] == pre[i]:
